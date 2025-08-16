@@ -1,3 +1,9 @@
+import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'export',
@@ -68,6 +74,12 @@ const nextConfig = {
     // Exclude nested directories that contain API routes
     config.watchOptions = {
       ignored: ['**/dopetechdbinit/**', '**/backup/**']
+    }
+    
+    // Ensure proper path resolution for @ alias
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': path.resolve(__dirname, './'),
     }
     
     // Optimize bundle size
