@@ -1,6 +1,6 @@
 [build]
   command = "pnpm build"
-  publish = ".next"
+  publish = "out"
   functions = ".netlify/functions"
 
 [[plugins]]

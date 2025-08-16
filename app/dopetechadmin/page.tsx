@@ -625,15 +625,15 @@ export default function DopeTechAdmin() {
               <span>Products</span>
             </button>
             <button
-              onClick={() => setActiveTab("assets")}
+              onClick={() => setActiveTab("orders")}
               className={`flex items-center space-x-1 sm:space-x-2 px-3 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl transition-all duration-200 font-medium whitespace-nowrap text-sm sm:text-base ${
-                activeTab === "assets"
+                activeTab === "orders"
                   ? "bg-blue-600 text-white shadow-lg"
                   : "text-gray-300 hover:text-white hover:bg-white/10"
               }`}
             >
-              <FileImage className="w-4 h-4" />
-              <span>Assets</span>
+              <ShoppingCart className="w-4 h-4" />
+              <span>Orders</span>
             </button>
             <button
               onClick={() => setActiveTab("carousel")}
@@ -647,15 +647,15 @@ export default function DopeTechAdmin() {
               <span>Carousel</span>
             </button>
             <button
-              onClick={() => setActiveTab("orders")}
+              onClick={() => setActiveTab("assets")}
               className={`flex items-center space-x-1 sm:space-x-2 px-3 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl transition-all duration-200 font-medium whitespace-nowrap text-sm sm:text-base ${
-                activeTab === "orders"
+                activeTab === "assets"
                   ? "bg-blue-600 text-white shadow-lg"
                   : "text-gray-300 hover:text-white hover:bg-white/10"
               }`}
             >
-              <ShoppingCart className="w-4 h-4" />
-              <span>Orders</span>
+              <FileImage className="w-4 h-4" />
+              <span>Assets</span>
             </button>
           </div>
         </div>

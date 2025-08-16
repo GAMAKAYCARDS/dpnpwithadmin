@@ -25,43 +25,11 @@ import {
   Truck,
   CheckCircle2
 } from "lucide-react"
-import { supabase } from "@/lib/supabase"
+import { getOrders, type Order, type OrderItem } from "@/lib/orders-data"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-
-interface OrderItem {
-  id: number
-  order_id: number
-  product_id: number
-  quantity: number
-  price: number
-  created_at: string
-  product_name?: string
-  product_image?: string
-}
-
-interface Order {
-  id: number
-  order_id: string
-  customer_name: string
-  customer_email: string
-  customer_phone: string
-  customer_city: string
-  customer_state: string
-  customer_zip_code: string
-  customer_address: string
-  total_amount: number
-  payment_option: string
-  payment_status: string
-  order_status: string
-  receipt_url: string | null
-  receipt_file_name: string | null
-  created_at: string
-  updated_at: string
-  order_items?: OrderItem[]
-}
 
 export function OrdersManager() {
   const [orders, setOrders] = useState<Order[]>([])
@@ -71,24 +39,14 @@ export function OrdersManager() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
   const [orderDetailsOpen, setOrderDetailsOpen] = useState(false)
 
-  // Load orders from API route
+  // Load orders from data function
   const loadOrders = async () => {
     try {
       setLoading(true)
-      console.log('🔄 Loading orders via API...')
+      console.log('🔄 Loading orders...')
       
-      // Fetch orders with order items from API route
-      const response = await fetch('/api/orders')
-      
-      if (!response.ok) {
-        console.error('❌ Error fetching orders:', response.statusText)
-        return
-      }
-
-      const responseData = await response.json()
-      console.log('📊 Raw API response:', responseData)
-      
-      const { orders: ordersWithItems } = responseData
+      // Fetch orders with order items using the data function
+      const ordersWithItems = await getOrders()
 
       console.log('✅ All orders loaded successfully:', ordersWithItems.length)
       console.log('📊 Sample order data:', ordersWithItems[0])
