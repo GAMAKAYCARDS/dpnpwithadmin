@@ -1148,15 +1148,7 @@ export default function DopeTechAdmin() {
 
         {/* Orders & Receipts Tab */}
         {activeTab === "orders" && (
-          <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl sm:rounded-2xl p-4 sm:p-6">
-            <div className="flex items-center space-x-3 mb-4 sm:mb-6">
-              <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-500/20 rounded-lg flex items-center justify-center">
-                <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400" />
-              </div>
-              <h3 className="text-lg sm:text-xl font-semibold text-white">Orders & Receipts</h3>
-            </div>
           <OrdersManager />
-          </div>
         )}
       </main>
     </div>

@@ -101,9 +101,9 @@ export async function getProducts(): Promise<Product[]> {
   try {
     console.log('🔗 Connecting to Supabase...')
     
-    // Add a timeout to prevent hanging
+    // Add a timeout to prevent hanging - increased to 15 seconds
     const timeoutPromise = new Promise((_, reject) => {
-      setTimeout(() => reject(new Error('Request timeout')), 5000) // 5 second timeout
+      setTimeout(() => reject(new Error('Request timeout - Supabase connection took too long')), 15000) // 15 second timeout
     })
     
     const supabasePromise = supabase
@@ -186,9 +186,9 @@ export async function getProductsByCategory(category: string): Promise<Product[]
 // Get random dope picks (maximum 6 products)
 export async function getDopePicks(maxCount: number = 6): Promise<Product[]> {
   try {
-    // Add timeout protection
+    // Add timeout protection - increased to 15 seconds
     const timeoutPromise = new Promise((_, reject) => {
-      setTimeout(() => reject(new Error('Request timeout')), 5000)
+      setTimeout(() => reject(new Error('Request timeout - Supabase connection took too long')), 15000) // 15 second timeout
     })
     
     const supabasePromise = supabase

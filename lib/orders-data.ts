@@ -34,66 +34,36 @@ export interface Order {
 
 export async function getOrders(): Promise<Order[]> {
   try {
-    console.log('🔄 Loading orders with items...')
+    console.log('🔄 Loading orders with items via API...')
     
-    // Fetch orders
-    const { data: ordersData, error: ordersError } = await supabase
-      .from('orders')
-      .select('*')
-      .order('created_at', { ascending: false })
+    // Use API route to bypass RLS policies securely
+    const response = await fetch('/api/orders', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
 
-    if (ordersError) {
-      console.error('❌ Error fetching orders:', ordersError)
+    if (!response.ok) {
+      console.error('❌ Error fetching orders from API:', response.status, response.statusText)
       return []
     }
 
-    console.log(`✅ Loaded ${ordersData.length} orders`)
+    const result = await response.json()
 
-    // Fetch order items for each order
-    const ordersWithItems = await Promise.all(
-      ordersData.map(async (order) => {
-        console.log(`📦 Loading items for order: ${order.order_id}`)
-        
-        const { data: itemsData, error: itemsError } = await supabase
-          .from('order_items')
-          .select(`
-            *,
-            products (
-              name,
-              image_url
-            )
-          `)
-          .eq('order_id', order.id)
+    if (!result.success) {
+      console.error('❌ API returned error:', result.error)
+      return []
+    }
 
-        if (itemsError) {
-          console.error('❌ Error fetching order items:', itemsError)
-          return order
-        }
-
-        console.log(`✅ Loaded ${itemsData.length} items for order ${order.order_id}`)
-
-        // Map product data to order items
-        const orderItems = itemsData.map((item: any) => ({
-          ...item,
-          product_name: item.products?.name || 'Unknown Product',
-          product_image: item.products?.image_url || ''
-        }))
-
-        return {
-          ...order,
-          order_items: orderItems
-        }
-      })
-    )
-
-    console.log('✅ All orders loaded successfully:', ordersWithItems.length)
-    console.log('📊 Sample order with items:', ordersWithItems[0] ? {
-      id: ordersWithItems[0].id,
-      order_id: ordersWithItems[0].order_id,
-      order_items_count: ordersWithItems[0].order_items?.length || 0
+    console.log(`✅ Loaded ${result.count} orders via API`)
+    console.log('📊 Sample order with items:', result.orders[0] ? {
+      id: result.orders[0].id,
+      order_id: result.orders[0].order_id,
+      order_items_count: result.orders[0].order_items?.length || 0
     } : 'No orders')
     
-    return ordersWithItems
+    return result.orders || []
     
   } catch (error) {
     console.error('❌ Error loading orders:', error)
