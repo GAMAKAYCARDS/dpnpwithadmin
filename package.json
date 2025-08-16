@@ -15,8 +15,9 @@
     "type-check": "tsc --noEmit",
     "build:check": "node scripts/check-static-assets.js && npm run build",
     "fix:deployment": "node scripts/fix-deployment-issues.js",
-    "build:netlify": "npm install --legacy-peer-deps && next build",
-    "debug:deployment": "node scripts/debug-deployment.js"
+    "build:netlify": "npm ci --legacy-peer-deps && next build",
+    "debug:deployment": "node scripts/debug-deployment.js",
+    "test:build": "node test-build.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

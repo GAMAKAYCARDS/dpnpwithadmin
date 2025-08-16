@@ -1,87 +1,51 @@
-# Netlify Deployment Fix Guide
+# Netlify Deployment Fix
 
-## Issues Fixed:
-
-### 1. Static File Serving
-- ✅ Updated `netlify.toml` to use `publish = "out"` for static export
-- ✅ Added proper headers for static assets (logo, gif, images)
-- ✅ Configured Next.js for static export with `output: 'export'`
-
-### 2. Logo Loading Issues
-- ✅ Added error handling for logo loading
-- ✅ Implemented fallback text logo if SVG fails to load
-- ✅ Added proper cache headers for SVG files
-
-### 3. GIF Loading Issues
-- ✅ Added error handling for GIF loading
-- ✅ Implemented fallback gradient background
-- ✅ Added logic to use optimized GIF in production
-
-## Current Status:
-
-### Logo (`/logo/dopelogo.svg`)
-- ✅ File exists and is properly referenced
-- ✅ Error handling implemented
-- ✅ Fallback: Text logo "DopeTech" in brand colors
-
-### GIF (`/gif/doptechgif.gif`)
-- ⚠️ **ISSUE**: File is 84MB (too large for web deployment)
-- ✅ Error handling implemented
-- ✅ Fallback: Gradient background with text
-- 🔧 **SOLUTION NEEDED**: Optimize GIF to under 5MB
-
-## Next Steps:
-
-### 1. Optimize the GIF
-```bash
-# Option 1: Use online tools
-# Visit: https://ezgif.com/optimize
-# Upload doptechgif.gif and optimize to under 5MB
-# Download and rename to doptechgif-optimized.gif
-
-# Option 2: Convert to MP4/WebM
-# Use tools like FFmpeg to convert GIF to video format
-# Update code to use <video> element instead of <img>
+## Issue
+The Netlify deployment was failing with the error:
+```
+It looks like you're trying to use TypeScript but do not have the required package(s) installed.
+Please install typescript and @types/react by running:
+npm install --save-dev typescript @types/react
 ```
 
-### 2. Deploy to Netlify
-```bash
-# Build the project
-pnpm build
+## Root Cause
+Netlify was not installing `devDependencies` during the build process, which includes the required TypeScript packages.
 
-# Deploy to Netlify
-# The netlify.toml is already configured correctly
+## Changes Made
+
+### 1. Updated `netlify.toml`
+- Changed build command from `npm run build` to `npm run build:netlify`
+- Added `NPM_CONFIG_PRODUCTION = "false"` to ensure devDependencies are installed
+
+### 2. Updated `package.json`
+- Modified `build:netlify` script to use `npm ci --legacy-peer-deps` instead of `npm install`
+- Added `test:build` script for local testing
+
+### 3. Created `.npmrc`
+- Set `production=false` to ensure devDependencies are installed
+- Set `legacy-peer-deps=true` for compatibility
+- Set `include=dev` to explicitly include devDependencies
+
+### 4. Created `test-build.js`
+- Added a test script to verify the build process locally
+- Checks for TypeScript packages and runs the build
+
+## Files Modified
+- `netlify.toml` - Updated build configuration
+- `package.json` - Updated build scripts
+- `.npmrc` - Added npm configuration (new file)
+- `test-build.js` - Added build test script (new file)
+
+## Testing
+Run the following command to test the build locally:
+```bash
+npm run test:build
 ```
 
-### 3. Verify Deployment
-- Check that logo loads properly
-- Check that GIF loads (if optimized) or fallback displays
-- Test all static assets are served correctly
+## Next Steps
+1. Commit and push these changes to your repository
+2. Trigger a new Netlify deployment
+3. Monitor the build logs to ensure the TypeScript packages are properly installed
 
-## Configuration Files Updated:
-
-### netlify.toml
-- Changed `publish = ".next"` to `publish = "out"`
-- Added headers for static assets
-- Added proper cache control
-
-### next.config.mjs
-- Added `output: 'export'` for static generation
-- Configured for Netlify deployment
-
-### Error Handling
-- Added fallbacks for both logo and GIF
-- Graceful degradation if assets fail to load
-
-## Performance Optimizations:
-- Static export for faster loading
-- Proper cache headers for assets
-- Lazy loading for images
-- Error boundaries for asset loading
-
-## Troubleshooting:
-If assets still don't load:
-1. Check Netlify build logs
-2. Verify file paths in public directory
-3. Check browser console for errors
-4. Ensure files are committed to git repository
+## Expected Result
+The build should now successfully install TypeScript packages and complete the Next.js build process without errors.

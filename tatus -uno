@@ -1,0 +1,5 @@
+[33mf01874a[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m Fix Netlify deployment issues
+[33m23342c9[m Fix path alias resolution: Add webpack alias configuration for @ imports to work on Netlify
+[33m50f549e[m Fix Netlify build: Move autoprefixer, postcss, and tailwindcss to dependencies for production build
+[33mdd02405[m Fix Express dependency issue: Exclude nested directories with API routes from build
+[33m6e083da[m Fix Netlify deployment: Update vaul to 1.1.2 for React 19 compatibility and add generateStaticParams for static export

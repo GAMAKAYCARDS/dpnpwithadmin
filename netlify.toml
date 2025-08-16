@@ -5,6 +5,7 @@
 [build.environment]
   NODE_VERSION = "18.x"
   NPM_FLAGS = "--legacy-peer-deps"
+  NPM_CONFIG_PRODUCTION = "false"
   # Ensure environment variables are available during build
   NEXT_PUBLIC_SUPABASE_URL = "https://aizgswoelfdkhyosgvzu.supabase.co"
   NEXT_PUBLIC_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFpemdzd29lbGZka2h5b3Nndnp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwNTUyMjUsImV4cCI6MjA3MDYzMTIyNX0.4a7Smvc_bueFLqZNvGk-AW0kD5dJusNwqaSAczJs0hU"
