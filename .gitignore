@@ -136,3 +136,7 @@ temp/
 
 # Local development
 .local
+
+# Nested duplicate directories
+dopetechdbinit/
+backup/

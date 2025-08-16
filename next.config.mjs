@@ -2,6 +2,10 @@
 const nextConfig = {
   output: 'export',
   trailingSlash: true,
+  // Exclude nested directories that contain API routes
+  experimental: {
+    excludeDefaultMomentLocales: false,
+  },
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -61,6 +65,11 @@ const nextConfig = {
     },
   }),
   webpack: (config, { dev, isServer }) => {
+    // Exclude nested directories that contain API routes
+    config.watchOptions = {
+      ignored: ['**/dopetechdbinit/**', '**/backup/**']
+    }
+    
     // Optimize bundle size
     if (!dev && !isServer) {
       config.optimization.splitChunks = {
