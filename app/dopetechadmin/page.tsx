@@ -108,8 +108,8 @@ const ProductCard = React.memo(({
             </button>
           </div>
         </div>
-      </div>
-
+        </div>
+        
       {/* Status badges */}
       <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
         {product.in_stock ? (
@@ -127,7 +127,7 @@ const ProductCard = React.memo(({
             {product.discount}% OFF
           </span>
         )}
-      </div>
+          </div>
     </div>
 
     {/* Product Info */}
@@ -510,7 +510,7 @@ export default function DopeTechAdmin() {
     return <LoginScreen password={password} setPassword={setPassword} handleLogin={handleLogin} />
   }
 
-  return (
+    return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white">
       {/* Modern Header */}
       <header className="bg-white/10 backdrop-blur-xl border-b border-white/20 sticky top-0 z-50">
@@ -523,9 +523,9 @@ export default function DopeTechAdmin() {
               <div>
                 <h1 className="text-lg sm:text-xl font-bold text-white">DopeTech Admin</h1>
                 <p className="text-xs text-gray-400 hidden sm:block">Dashboard</p>
-              </div>
             </div>
-            
+          </div>
+          
             <div className="flex items-center space-x-2 sm:space-x-4">
               {/* Mobile Stats */}
               <div className="flex items-center space-x-2 sm:hidden">
@@ -543,18 +543,18 @@ export default function DopeTechAdmin() {
                   <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
                   <span className="text-gray-300">{stats.inStock} In Stock</span>
                 </div>
-              </div>
-              
-              <button
+            </div>
+            
+            <button
                 onClick={handleLogout}
                 className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-4 py-2 bg-red-500/20 hover:bg-red-500/30 rounded-lg transition-all duration-200 text-red-300 hover:text-red-200"
-              >
+            >
                 <LogOut className="w-4 h-4" />
                 <span className="hidden sm:inline">Logout</span>
-              </button>
-            </div>
+            </button>
           </div>
         </div>
+      </div>
       </header>
 
       {/* Main Content */}
@@ -566,25 +566,25 @@ export default function DopeTechAdmin() {
               <div>
                 <p className="text-xs sm:text-sm text-gray-400">Total Products</p>
                 <p className="text-lg sm:text-2xl font-bold text-white">{stats.total}</p>
-              </div>
+                </div>
               <div className="w-8 h-8 sm:w-12 sm:h-12 bg-blue-500/20 rounded-lg sm:rounded-xl flex items-center justify-center">
                 <Package className="w-4 h-4 sm:w-6 sm:h-6 text-blue-400" />
               </div>
+              </div>
             </div>
-          </div>
-          
+            
           <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl sm:rounded-2xl p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs sm:text-sm text-gray-400">In Stock</p>
                 <p className="text-lg sm:text-2xl font-bold text-green-400">{stats.inStock}</p>
-              </div>
+            </div>
               <div className="w-8 h-8 sm:w-12 sm:h-12 bg-green-500/20 rounded-lg sm:rounded-xl flex items-center justify-center">
                 <CheckCircle className="w-4 h-4 sm:w-6 sm:h-6 text-green-400" />
-              </div>
-            </div>
           </div>
-          
+        </div>
+      </div>
+
           <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl sm:rounded-2xl p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -677,20 +677,20 @@ export default function DopeTechAdmin() {
                 {/* Top Row - Add Button and Product Count */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-3 sm:space-y-0">
                   <div className="flex items-center space-x-3">
-                    <button
-                      onClick={() => setIsAddingProduct(true)}
+                  <button
+                    onClick={() => setIsAddingProduct(true)}
                       className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 sm:py-3 px-4 sm:px-6 rounded-lg sm:rounded-xl transition-all duration-200 hover:scale-105 flex items-center space-x-2 text-sm sm:text-base"
-                    >
+                  >
                       <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
-                      <span>Add Product</span>
-                    </button>
-                    
+                    <span>Add Product</span>
+                  </button>
+                  
                     <div className="flex items-center space-x-2 px-3 sm:px-4 py-2 bg-white/10 rounded-lg">
                       <Package className="w-4 h-4 text-blue-400" />
                       <span className="text-xs sm:text-sm text-gray-300">{filteredProducts.length} Products</span>
-                    </div>
                   </div>
-                  
+                </div>
+                
                   {/* View Mode Toggle - Mobile Only */}
                   <div className="flex items-center space-x-1 bg-white/10 rounded-lg p-1 sm:hidden">
                     <button
@@ -743,7 +743,7 @@ export default function DopeTechAdmin() {
 
                   {/* View Mode Toggle - Desktop Only */}
                   <div className="hidden sm:flex items-center space-x-1 bg-white/10 rounded-lg p-1">
-                    <button
+                <button
                       onClick={() => setViewMode("grid")}
                       className={`p-2 rounded-lg transition-all duration-200 ${
                         viewMode === "grid" 
@@ -752,7 +752,7 @@ export default function DopeTechAdmin() {
                       }`}
                     >
                       <Grid3X3 className="w-4 h-4" />
-                    </button>
+                </button>
                     <button
                       onClick={() => setViewMode("list")}
                       className={`p-2 rounded-lg transition-all duration-200 ${
@@ -764,10 +764,10 @@ export default function DopeTechAdmin() {
                       <List className="w-4 h-4" />
                     </button>
                   </div>
-                </div>
-              </div>
-            </div>
-
+                  </div>
+                  </div>
+                  </div>
+                  
             {/* Products Grid/List */}
             {isLoading ? (
               <LoadingSpinner />
@@ -785,16 +785,16 @@ export default function DopeTechAdmin() {
                     isEditing={!!editingProduct}
                   />
                 ))}
-              </div>
-            )}
+                          </div>
+                        )}
 
             {filteredProducts.length === 0 && !isLoading && (
               <div className="text-center py-12">
                 <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-gray-300 mb-2">No products found</h3>
                 <p className="text-gray-400">Try adjusting your search or filters</p>
-              </div>
-            )}
+                        </div>
+                      )}
           </>
         )}
 
@@ -920,10 +920,10 @@ export default function DopeTechAdmin() {
                           </div>
                         </div>
                       )}
+                      </div>
                     </div>
                   </div>
-                </div>
-                
+                  
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end space-y-2 sm:space-y-0 sm:space-x-4 pt-4 sm:pt-6 border-t border-white/10">
                   <button
                     onClick={() => setIsAddingProduct(false)}
@@ -1017,29 +1017,29 @@ export default function DopeTechAdmin() {
                       placeholder="0"
                     />
                   </div>
-                </div>
-                
+                  </div>
+                  
                 <div>
                   <label className="block text-sm font-medium text-gray-200 mb-2">Description</label>
-                  <textarea
-                    value={editingProduct.description}
-                    onChange={(e) => setEditingProduct({...editingProduct, description: e.target.value})}
-                    rows={3}
+                    <textarea
+                      value={editingProduct.description}
+                      onChange={(e) => setEditingProduct({...editingProduct, description: e.target.value})}
+                      rows={3}
                     className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base"
                     placeholder="Enter product description"
-                  />
-                </div>
-                
-                <div className="flex items-center space-x-4">
-                  <label className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      checked={editingProduct.in_stock}
-                      onChange={(e) => setEditingProduct({...editingProduct, in_stock: e.target.checked})}
-                      className="w-4 h-4 text-blue-600 bg-white/10 border-white/20 rounded focus:ring-blue-500 focus:ring-2"
                     />
+                  </div>
+                  
+                <div className="flex items-center space-x-4">
+                    <label className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        checked={editingProduct.in_stock}
+                        onChange={(e) => setEditingProduct({...editingProduct, in_stock: e.target.checked})}
+                      className="w-4 h-4 text-blue-600 bg-white/10 border-white/20 rounded focus:ring-blue-500 focus:ring-2"
+                      />
                     <span className="text-sm text-gray-200">In Stock</span>
-                  </label>
+                    </label>
                   
                   <div className="flex items-center space-x-2">
                     <label className="text-sm text-gray-200">Discount (%):</label>
@@ -1055,16 +1055,16 @@ export default function DopeTechAdmin() {
                       className="w-20 px-2 py-1 bg-white/10 border border-white/20 rounded text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
+                  </div>
                 </div>
-              </div>
-              
+                
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end space-y-2 sm:space-y-0 sm:space-x-4 pt-4 sm:pt-6 border-t border-white/10">
-                <button
-                  onClick={handleCancelEdit}
+                  <button
+                    onClick={handleCancelEdit}
                   className="px-4 sm:px-6 py-2 sm:py-3 text-gray-300 hover:text-white transition-colors duration-200 text-sm sm:text-base"
-                >
-                  Cancel
-                </button>
+                  >
+                    Cancel
+                  </button>
                 <button
                   onClick={() => handleSaveProduct(editingProduct.id, editingProduct)}
                   className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 sm:py-3 px-4 sm:px-6 rounded-lg transition-all duration-200 hover:scale-105 text-sm sm:text-base"
@@ -1073,8 +1073,8 @@ export default function DopeTechAdmin() {
                 </button>
               </div>
             </div>
-          </div>
-        )}
+                  </div>
+                )}
 
         {/* Assets Tab */}
         {activeTab === "assets" && (
@@ -1083,7 +1083,7 @@ export default function DopeTechAdmin() {
               <div className="flex items-center space-x-3 mb-4 sm:mb-6">
                 <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-500/20 rounded-lg flex items-center justify-center">
                   <Upload className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400" />
-                </div>
+                  </div>
                 <h3 className="text-lg sm:text-xl font-semibold text-white">Upload New Assets</h3>
               </div>
               <AssetUploader />
@@ -1138,7 +1138,7 @@ export default function DopeTechAdmin() {
               <div className="flex items-center space-x-3 mb-4 sm:mb-6">
                 <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-500/20 rounded-lg flex items-center justify-center">
                   <ImageIcon className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400" />
-                </div>
+            </div>
                 <h3 className="text-lg sm:text-xl font-semibold text-white">Carousel Editor</h3>
               </div>
               <HeroImageManager />
@@ -1155,7 +1155,7 @@ export default function DopeTechAdmin() {
               </div>
               <h3 className="text-lg sm:text-xl font-semibold text-white">Orders & Receipts</h3>
             </div>
-            <OrdersManager />
+          <OrdersManager />
           </div>
         )}
       </main>

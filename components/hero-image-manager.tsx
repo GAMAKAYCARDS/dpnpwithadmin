@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
-import { Upload, Trash2, Edit, Save, X, FileImage } from 'lucide-react'
+import { Upload, Trash2, Edit, Save, X, FileImage, Eye, EyeOff, RefreshCw, Loader2 } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 
 export function HeroImageManager() {
@@ -104,85 +104,127 @@ export function HeroImageManager() {
 
   if (loading) {
     return (
-      <Card className="bg-black/50 border-[#F7DD0F]/20">
-        <CardHeader>
-          <CardTitle className="text-white">Hero Images</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#F7DD0F]"></div>
-            <span className="ml-2 text-white">Loading hero images...</span>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="w-full max-w-md sm:max-w-lg lg:max-w-xl mx-auto">
+        <Card className="bg-white/5 backdrop-blur-xl border border-white/20 shadow-xl">
+          <CardHeader className="pb-4 sm:pb-6 border-b border-white/10 p-4 sm:p-6">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="p-2 sm:p-3 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-lg sm:rounded-xl flex-shrink-0">
+                <FileImage className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 text-blue-400" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <CardTitle className="text-lg sm:text-xl lg:text-2xl font-bold text-white leading-tight">
+                  Hero Carousel Management
+                </CardTitle>
+                <p className="text-xs sm:text-sm lg:text-base text-gray-300 mt-1 leading-relaxed">
+                  Manage hero images for the sliding card carousel
+                </p>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex items-center justify-center py-8">
+              <div className="flex items-center space-x-3">
+                <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
+                <span className="text-gray-400 text-sm sm:text-base">Loading hero images...</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     )
   }
 
   return (
-    <Card className="bg-black/50 border-[#F7DD0F]/20">
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between text-white">
-          <div className="flex items-center gap-2">
-            <FileImage className="w-5 h-5 text-[#F7DD0F]" />
-            Hero Carousel Management
+    <div className="w-full max-w-md sm:max-w-lg lg:max-w-xl mx-auto space-y-4 sm:space-y-6">
+      {/* Header Card */}
+      <Card className="bg-white/5 backdrop-blur-xl border border-white/20 shadow-xl">
+        <CardHeader className="pb-4 sm:pb-6 border-b border-white/10 p-4 sm:p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="p-2 sm:p-3 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-lg sm:rounded-xl flex-shrink-0">
+                <FileImage className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 text-blue-400" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <CardTitle className="text-lg sm:text-xl lg:text-2xl font-bold text-white leading-tight">
+                  Hero Carousel Management
+                </CardTitle>
+                <p className="text-xs sm:text-sm lg:text-base text-gray-300 mt-1 leading-relaxed">
+                  Manage hero images for the sliding card carousel. Active images will be displayed on the homepage.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Button 
+                onClick={() => setPreviewMode(!previewMode)} 
+                variant="outline" 
+                size="sm"
+                className="border-white/20 text-white hover:bg-white/10 h-10 px-3 sm:px-4"
+              >
+                {previewMode ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                <span className="hidden sm:inline ml-2">{previewMode ? 'Hide' : 'Preview'}</span>
+              </Button>
+              <Button 
+                onClick={refreshHeroImages} 
+                variant="outline" 
+                size="sm"
+                className="border-white/20 text-white hover:bg-white/10 h-10 px-3 sm:px-4"
+              >
+                <RefreshCw className="w-4 h-4" />
+                <span className="hidden sm:inline ml-2">Refresh</span>
+              </Button>
+            </div>
           </div>
-          <div className="flex gap-2">
-            <Button 
-              onClick={() => setPreviewMode(!previewMode)} 
-              variant="outline" 
-              size="sm"
-              className="border-[#F7DD0F]/30 text-[#F7DD0F] hover:bg-[#F7DD0F]/10"
-            >
-              {previewMode ? 'Hide Preview' : 'Show Preview'}
-            </Button>
-            <Button 
-              onClick={refreshHeroImages} 
-              variant="outline" 
-              size="sm"
-              className="border-[#F7DD0F]/30 text-[#F7DD0F] hover:bg-[#F7DD0F]/10"
-            >
-              Refresh
-            </Button>
+          
+          {/* Status Indicator */}
+          <div className="flex items-center gap-2 mt-3 sm:mt-4">
+            <div className={`w-2 h-2 rounded-full ${loading ? 'bg-yellow-500 animate-pulse' : error ? 'bg-red-500' : 'bg-green-500'}`}></div>
+            <span className="text-xs sm:text-sm text-gray-400">
+              {loading ? 'Loading...' : error ? 'Connection Error' : `${heroImages.length} images loaded`}
+            </span>
           </div>
-        </CardTitle>
-        <p className="text-gray-300 text-sm">
-          Manage hero images for the sliding card carousel. Active images will be displayed on the homepage.
-        </p>
-        <div className="flex items-center gap-2 text-xs">
-          <div className={`w-2 h-2 rounded-full ${loading ? 'bg-yellow-500 animate-pulse' : error ? 'bg-red-500' : 'bg-green-500'}`}></div>
-          <span className="text-gray-400">
-            {loading ? 'Loading...' : error ? 'Connection Error' : `${heroImages.length} images loaded`}
-          </span>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {error && (
-          <Alert variant="destructive" className="bg-red-900/20 border-red-500/30 text-red-300">
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
+        </CardHeader>
+      </Card>
 
-        {/* Preview Section */}
-        {previewMode && (
-          <div className="border border-[#F7DD0F]/20 rounded-lg p-4 bg-black/30">
-            <h3 className="text-white font-medium mb-4 flex items-center gap-2">
-              <FileImage className="w-4 h-4 text-[#F7DD0F]" />
-              Carousel Preview
-            </h3>
+      {/* Error Display */}
+      {error && (
+        <Alert variant="destructive" className="bg-red-500/10 border-red-500/20">
+          <AlertDescription className="text-red-300 font-medium text-xs sm:text-sm">{error}</AlertDescription>
+        </Alert>
+      )}
+
+      {/* Preview Section */}
+      {previewMode && (
+        <Card className="bg-white/5 backdrop-blur-xl border border-white/20 shadow-xl">
+          <CardHeader className="pb-4 sm:pb-6 border-b border-white/10 p-4 sm:p-6">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="p-2 sm:p-3 bg-gradient-to-br from-green-500/20 to-blue-500/20 rounded-lg sm:rounded-xl flex-shrink-0">
+                <Eye className="w-4 h-4 sm:w-5 sm:h-5 text-green-400" />
+              </div>
+              <div>
+                <CardTitle className="text-base sm:text-lg lg:text-xl font-bold text-white">
+                  Carousel Preview
+                </CardTitle>
+                <p className="text-xs sm:text-sm text-gray-300 mt-1">
+                  Preview of active hero images
+                </p>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="p-4 sm:p-6">
             {heroImages.filter(img => img.is_active).length === 0 ? (
               <div className="text-center py-8 text-gray-400">
-                <FileImage className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                <p>No active hero images to preview</p>
-                <p className="text-sm">Upload and activate images to see them here</p>
+                <FileImage className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 opacity-50" />
+                <p className="text-sm sm:text-base">No active hero images to preview</p>
+                <p className="text-xs sm:text-sm mt-1">Upload and activate images to see them here</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 {heroImages
                   .filter(img => img.is_active)
                   .sort((a, b) => a.display_order - b.display_order)
                   .map((image, index) => (
                     <div key={image.id} className="relative group">
-                      <div className="aspect-video bg-black/50 rounded-lg overflow-hidden border border-[#F7DD0F]/20">
+                      <div className="aspect-video bg-black/50 rounded-lg sm:rounded-xl overflow-hidden border border-white/20 hover:border-white/40 transition-all duration-300">
                         <img
                           src={image.image_url}
                           alt={image.title}
@@ -190,62 +232,71 @@ export function HeroImageManager() {
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                         <div className="absolute bottom-0 left-0 right-0 p-3 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                          <h4 className="text-white font-semibold text-sm">{image.title}</h4>
+                          <h4 className="text-white font-semibold text-sm sm:text-base">{image.title}</h4>
                           {image.subtitle && (
-                            <p className="text-gray-300 text-xs">{image.subtitle}</p>
+                            <p className="text-gray-300 text-xs sm:text-sm">{image.subtitle}</p>
                           )}
                         </div>
                       </div>
-                      <div className="absolute top-2 left-2 bg-[#F7DD0F] text-black text-xs px-2 py-1 rounded font-bold">
+                      <div className="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded font-bold">
                         {index + 1}
                       </div>
                     </div>
                   ))}
               </div>
             )}
-          </div>
-        )}
+          </CardContent>
+        </Card>
+      )}
 
-        {/* Upload Section */}
-        <div className="border-2 border-dashed border-[#F7DD0F]/30 rounded-lg p-6 bg-black/20">
-          <div className="text-center mb-6">
-            <Upload className="mx-auto h-12 w-12 text-[#F7DD0F] mb-4" />
-            <h3 className="text-lg font-medium text-white mb-2">
-              Upload Hero Image
-            </h3>
-            <p className="text-gray-300 mb-4">
-              Upload an image to display in the hero carousel. Recommended size: 1920x1080px
-            </p>
+      {/* Upload Section */}
+      <Card className="bg-white/5 backdrop-blur-xl border border-white/20 shadow-xl">
+        <CardHeader className="pb-4 sm:pb-6 border-b border-white/10 p-4 sm:p-6">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="p-2 sm:p-3 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-lg sm:rounded-xl flex-shrink-0">
+              <Upload className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 text-blue-400" />
+            </div>
+            <div>
+              <CardTitle className="text-base sm:text-lg lg:text-xl font-bold text-white">
+                Upload Hero Image
+              </CardTitle>
+              <p className="text-xs sm:text-sm text-gray-300 mt-1">
+                Upload an image to display in the hero carousel. Recommended size: 1920x1080px
+              </p>
+            </div>
           </div>
-          
+        </CardHeader>
+        
+        <CardContent className="p-4 sm:p-6 space-y-4 sm:space-y-6">
           {/* Text Input Fields */}
-          <div className="space-y-4 mb-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="upload-title" className="text-white">Title *</Label>
+          <div className="space-y-4 sm:space-y-6">
+            <div className="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-4 lg:gap-6">
+              <div className="space-y-2 sm:space-y-3">
+                <Label htmlFor="upload-title" className="text-sm sm:text-base font-semibold text-white">Title *</Label>
                 <Input
                   id="upload-title"
                   placeholder="Enter hero title"
                   value={uploadForm.title}
                   onChange={(e) => setUploadForm({ ...uploadForm, title: e.target.value })}
                   disabled={uploading}
-                  className="bg-black/50 border-[#F7DD0F]/30 text-white placeholder-gray-400 focus:ring-[#F7DD0F] focus:border-[#F7DD0F]"
+                  className="bg-white/10 border-white/20 text-white placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 h-12 sm:h-14 text-sm sm:text-base"
                 />
               </div>
-              <div>
-                <Label htmlFor="upload-subtitle" className="text-white">Subtitle</Label>
+              <div className="space-y-2 sm:space-y-3">
+                <Label htmlFor="upload-subtitle" className="text-sm sm:text-base font-semibold text-white">Subtitle</Label>
                 <Input
                   id="upload-subtitle"
                   placeholder="Enter subtitle"
                   value={uploadForm.subtitle}
                   onChange={(e) => setUploadForm({ ...uploadForm, subtitle: e.target.value })}
                   disabled={uploading}
-                  className="bg-black/50 border-[#F7DD0F]/30 text-white placeholder-gray-400 focus:ring-[#F7DD0F] focus:border-[#F7DD0F]"
+                  className="bg-white/10 border-white/20 text-white placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 h-12 sm:h-14 text-sm sm:text-base"
                 />
               </div>
             </div>
-            <div>
-              <Label htmlFor="upload-description" className="text-white">Description</Label>
+            
+            <div className="space-y-2 sm:space-y-3">
+              <Label htmlFor="upload-description" className="text-sm sm:text-base font-semibold text-white">Description</Label>
               <Textarea
                 id="upload-description"
                 placeholder="Enter description (optional)"
@@ -253,27 +304,29 @@ export function HeroImageManager() {
                 onChange={(e) => setUploadForm({ ...uploadForm, description: e.target.value })}
                 rows={3}
                 disabled={uploading}
-                className="bg-black/50 border-[#F7DD0F]/30 text-white placeholder-gray-400 focus:ring-[#F7DD0F] focus:border-[#F7DD0F]"
+                className="bg-white/10 border-white/20 text-white placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
               />
             </div>
-            <div>
-              <Label htmlFor="upload-link" className="text-white">Link URL</Label>
+            
+            <div className="space-y-2 sm:space-y-3">
+              <Label htmlFor="upload-link" className="text-sm sm:text-base font-semibold text-white">Link URL</Label>
               <Input
                 id="upload-link"
                 placeholder="Enter link URL (e.g., /product/123 or https://example.com)"
                 value={uploadForm.button_link}
                 onChange={(e) => setUploadForm({ ...uploadForm, button_link: e.target.value })}
                 disabled={uploading}
-                className="bg-black/50 border-[#F7DD0F]/30 text-white placeholder-gray-400 focus:ring-[#F7DD0F] focus:border-[#F7DD0F]"
+                className="bg-white/10 border-white/20 text-white placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 h-12 sm:h-14 text-sm sm:text-base"
               />
-              <p className="text-xs text-gray-400 mt-1">
+              <p className="text-xs sm:text-sm text-gray-400">
                 When users click on this carousel slide, they will be redirected to this URL
               </p>
             </div>
-            <div className="flex items-center justify-between p-4 bg-black/30 rounded-lg border border-[#F7DD0F]/20">
+            
+            <div className="flex items-center justify-between p-3 sm:p-4 bg-white/5 rounded-lg sm:rounded-xl border border-white/20">
               <div>
-                <Label className="text-white font-medium">Show Content</Label>
-                <p className="text-xs text-gray-400 mt-1">
+                <Label className="text-sm sm:text-base font-semibold text-white">Show Content</Label>
+                <p className="text-xs sm:text-sm text-gray-400 mt-1">
                   Display title, subtitle, and description on this carousel slide
                 </p>
               </div>
@@ -281,223 +334,251 @@ export function HeroImageManager() {
                 checked={uploadForm.show_content}
                 onCheckedChange={(checked) => setUploadForm({ ...uploadForm, show_content: checked })}
                 disabled={uploading}
-                className="data-[state=checked]:bg-[#F7DD0F] data-[state=unchecked]:bg-gray-600"
+                className="data-[state=checked]:bg-blue-500 data-[state=unchecked]:bg-gray-600"
               />
             </div>
           </div>
           
           {/* File Upload */}
-          <div className="text-center">
-            <Input
-              type="file"
-              accept="image/*"
-              onChange={handleFileUpload}
-              disabled={uploading}
-              className="max-w-xs mx-auto bg-black/50 border-[#F7DD0F]/30 text-white file:bg-[#F7DD0F] file:text-black file:border-0 file:rounded file:px-4 file:py-2 file:cursor-pointer hover:file:bg-[#F7DD0F]/90"
-            />
+          <div className="space-y-3 sm:space-y-4">
+            <Label className="text-sm sm:text-base font-semibold text-white">Select Image File</Label>
+            <div className="relative">
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={handleFileUpload}
+                disabled={uploading}
+                className="file:text-blue-500 file:hover:text-blue-600 file:font-semibold file:bg-transparent file:border-0 file:py-2 sm:file:py-3 file:px-3 sm:file:px-4 file:rounded-lg file:cursor-pointer file:transition-colors file:duration-200 border-white/20 bg-white/10 text-white h-12 sm:h-14 text-sm sm:text-base"
+              />
+            </div>
             {uploading && (
-              <div className="flex items-center justify-center gap-2 mt-2 text-[#F7DD0F]">
-                <div className="w-4 h-4 border-2 border-[#F7DD0F] border-t-transparent rounded-full animate-spin"></div>
-                <p className="text-sm">Uploading...</p>
+              <div className="flex items-center justify-center gap-2 text-blue-400">
+                <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
+                <p className="text-sm sm:text-base">Uploading...</p>
               </div>
             )}
           </div>
-        </div>
+        </CardContent>
+      </Card>
 
-        {/* Hero Images List */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-medium text-white flex items-center gap-2">
-            <FileImage className="w-5 h-5 text-[#F7DD0F]" />
-            Current Hero Images ({heroImages.filter(img => img.is_active).length} active)
-          </h3>
+      {/* Hero Images List */}
+      <Card className="bg-white/5 backdrop-blur-xl border border-white/20 shadow-xl">
+        <CardHeader className="pb-4 sm:pb-6 border-b border-white/10 p-4 sm:p-6">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="p-2 sm:p-3 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-lg sm:rounded-xl flex-shrink-0">
+              <FileImage className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 text-purple-400" />
+            </div>
+            <div>
+              <CardTitle className="text-base sm:text-lg lg:text-xl font-bold text-white">
+                Current Hero Images
+              </CardTitle>
+              <p className="text-xs sm:text-sm text-gray-300 mt-1">
+                {heroImages.filter(img => img.is_active).length} active out of {heroImages.length} total
+              </p>
+            </div>
+          </div>
+        </CardHeader>
+        
+        <CardContent className="p-4 sm:p-6">
           {heroImages.length === 0 ? (
-            <div className="text-center py-8 text-gray-400 border border-[#F7DD0F]/20 rounded-lg bg-black/20">
-              <FileImage className="w-12 h-12 mx-auto mb-2 opacity-50" />
-              <p>No hero images uploaded yet.</p>
-              <p className="text-sm">Upload your first hero image to get started</p>
+            <div className="text-center py-8 sm:py-12 text-gray-400">
+              <FileImage className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 opacity-50" />
+              <p className="text-sm sm:text-base">No hero images uploaded yet.</p>
+              <p className="text-xs sm:text-sm mt-1">Upload your first hero image to get started</p>
             </div>
           ) : (
-            heroImages.map((image) => (
-              <Card key={image.id} className="overflow-hidden bg-black/30 border-[#F7DD0F]/20">
-                <div className="flex">
-                  {/* Image Preview */}
-                  <div className="w-48 h-32 relative bg-black/50">
-                    <img
-                      src={image.image_url}
-                      alt={image.title}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute top-2 right-2">
-                      <Switch
-                        checked={image.is_active}
-                        onCheckedChange={() => toggleActive(image)}
-                        className="data-[state=checked]:bg-[#F7DD0F] data-[state=unchecked]:bg-gray-600"
+            <div className="space-y-4 sm:space-y-6">
+              {heroImages.map((image) => (
+                <Card key={image.id} className="overflow-hidden bg-white/5 border border-white/20 hover:border-white/40 transition-all duration-300">
+                  <div className="flex flex-col sm:flex-row">
+                    {/* Image Preview */}
+                    <div className="w-full sm:w-48 h-32 sm:h-32 relative bg-black/50">
+                      <img
+                        src={image.image_url}
+                        alt={image.title}
+                        className="w-full h-full object-cover"
                       />
+                      <div className="absolute top-2 right-2">
+                        <Switch
+                          checked={image.is_active}
+                          onCheckedChange={() => toggleActive(image)}
+                          className="data-[state=checked]:bg-blue-500 data-[state=unchecked]:bg-gray-600"
+                        />
+                      </div>
+                      <div className="absolute bottom-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded font-bold">
+                        Order: {image.display_order}
+                      </div>
                     </div>
-                    <div className="absolute bottom-2 left-2 bg-[#F7DD0F] text-black text-xs px-2 py-1 rounded font-bold">
-                      Order: {image.display_order}
-                    </div>
-                  </div>
 
-                  {/* Content */}
-                  <div className="flex-1 p-4 text-white">
-                    {editingId === image.id ? (
-                      // Edit Form
-                      <div className="space-y-3">
-                        <div className="grid grid-cols-2 gap-3">
-                          <div>
-                            <Label htmlFor="title" className="text-white">Title</Label>
-                            <Input
-                              id="title"
-                              value={editForm.title || ''}
-                              onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
-                              className="bg-black/50 border-[#F7DD0F]/30 text-white placeholder-gray-400 focus:ring-[#F7DD0F] focus:border-[#F7DD0F]"
+                    {/* Content */}
+                    <div className="flex-1 p-4 text-white">
+                      {editingId === image.id ? (
+                        // Edit Form
+                        <div className="space-y-3 sm:space-y-4">
+                          <div className="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-4">
+                            <div className="space-y-2 sm:space-y-3">
+                              <Label htmlFor="title" className="text-sm sm:text-base font-semibold text-white">Title</Label>
+                              <Input
+                                id="title"
+                                value={editForm.title || ''}
+                                onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                                className="bg-white/10 border-white/20 text-white placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 h-12 sm:h-14 text-sm sm:text-base"
+                              />
+                            </div>
+                            <div className="space-y-2 sm:space-y-3">
+                              <Label htmlFor="subtitle" className="text-sm sm:text-base font-semibold text-white">Subtitle</Label>
+                              <Input
+                                id="subtitle"
+                                value={editForm.subtitle || ''}
+                                onChange={(e) => setEditForm({ ...editForm, subtitle: e.target.value })}
+                                className="bg-white/10 border-white/20 text-white placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 h-12 sm:h-14 text-sm sm:text-base"
+                              />
+                            </div>
+                          </div>
+                          
+                          <div className="space-y-2 sm:space-y-3">
+                            <Label htmlFor="description" className="text-sm sm:text-base font-semibold text-white">Description</Label>
+                            <Textarea
+                              id="description"
+                              value={editForm.description || ''}
+                              onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                              rows={2}
+                              className="bg-white/10 border-white/20 text-white placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
                             />
                           </div>
-                          <div>
-                            <Label htmlFor="subtitle" className="text-white">Subtitle</Label>
-                            <Input
-                              id="subtitle"
-                              value={editForm.subtitle || ''}
-                              onChange={(e) => setEditForm({ ...editForm, subtitle: e.target.value })}
-                              className="bg-black/50 border-[#F7DD0F]/30 text-white placeholder-gray-400 focus:ring-[#F7DD0F] focus:border-[#F7DD0F]"
-                            />
+                          
+                          <div className="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-4">
+                            <div className="space-y-2 sm:space-y-3">
+                              <Label htmlFor="button_text" className="text-sm sm:text-base font-semibold text-white">Button Text</Label>
+                              <Input
+                                id="button_text"
+                                value={editForm.button_text || ''}
+                                onChange={(e) => setEditForm({ ...editForm, button_text: e.target.value })}
+                                className="bg-white/10 border-white/20 text-white placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 h-12 sm:h-14 text-sm sm:text-base"
+                              />
+                            </div>
+                            <div className="space-y-2 sm:space-y-3">
+                              <Label htmlFor="display_order" className="text-sm sm:text-base font-semibold text-white">Display Order</Label>
+                              <Input
+                                id="display_order"
+                                type="number"
+                                value={editForm.display_order || 0}
+                                onChange={(e) => setEditForm({ ...editForm, display_order: parseInt(e.target.value) || 0 })}
+                                className="bg-white/10 border-white/20 text-white placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 h-12 sm:h-14 text-sm sm:text-base"
+                              />
+                            </div>
                           </div>
-                        </div>
-                        <div>
-                          <Label htmlFor="description" className="text-white">Description</Label>
-                          <Textarea
-                            id="description"
-                            value={editForm.description || ''}
-                            onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
-                            rows={2}
-                            className="bg-black/50 border-[#F7DD0F]/30 text-white placeholder-gray-400 focus:ring-[#F7DD0F] focus:border-[#F7DD0F]"
-                          />
-                        </div>
-                        <div className="grid grid-cols-2 gap-3">
-                          <div>
-                            <Label htmlFor="button_text" className="text-white">Button Text</Label>
+                          
+                          <div className="space-y-2 sm:space-y-3">
+                            <Label htmlFor="button_link" className="text-sm sm:text-base font-semibold text-white">Link URL</Label>
                             <Input
-                              id="button_text"
-                              value={editForm.button_text || ''}
-                              onChange={(e) => setEditForm({ ...editForm, button_text: e.target.value })}
-                              className="bg-black/50 border-[#F7DD0F]/30 text-white placeholder-gray-400 focus:ring-[#F7DD0F] focus:border-[#F7DD0F]"
+                              id="button_link"
+                              placeholder="Enter link URL (e.g., /product/123 or https://example.com)"
+                              value={editForm.button_link || ''}
+                              onChange={(e) => setEditForm({ ...editForm, button_link: e.target.value })}
+                              className="bg-white/10 border-white/20 text-white placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 h-12 sm:h-14 text-sm sm:text-base"
                             />
-                          </div>
-                          <div>
-                            <Label htmlFor="display_order" className="text-white">Display Order</Label>
-                            <Input
-                              id="display_order"
-                              type="number"
-                              value={editForm.display_order || 0}
-                              onChange={(e) => setEditForm({ ...editForm, display_order: parseInt(e.target.value) || 0 })}
-                              className="bg-black/50 border-[#F7DD0F]/30 text-white placeholder-gray-400 focus:ring-[#F7DD0F] focus:border-[#F7DD0F]"
-                            />
-                          </div>
-                        </div>
-                        <div>
-                          <Label htmlFor="button_link" className="text-white">Link URL</Label>
-                          <Input
-                            id="button_link"
-                            placeholder="Enter link URL (e.g., /product/123 or https://example.com)"
-                            value={editForm.button_link || ''}
-                            onChange={(e) => setEditForm({ ...editForm, button_link: e.target.value })}
-                            className="bg-black/50 border-[#F7DD0F]/30 text-white placeholder-gray-400 focus:ring-[#F7DD0F] focus:border-[#F7DD0F]"
-                          />
-                          <p className="text-xs text-gray-400 mt-1">
-                            When users click on this carousel slide, they will be redirected to this URL
-                          </p>
-                        </div>
-                        <div className="flex items-center justify-between p-3 bg-black/30 rounded-lg border border-[#F7DD0F]/20">
-                          <div>
-                            <Label className="text-white font-medium">Show Content</Label>
-                            <p className="text-xs text-gray-400 mt-1">
-                              Display title, subtitle, and description on this carousel slide
+                            <p className="text-xs sm:text-sm text-gray-400">
+                              When users click on this carousel slide, they will be redirected to this URL
                             </p>
                           </div>
-                          <Switch
-                            checked={editForm.show_content !== false}
-                            onCheckedChange={(checked) => setEditForm({ ...editForm, show_content: checked })}
-                            className="data-[state=checked]:bg-[#F7DD0F] data-[state=unchecked]:bg-gray-600"
-                          />
-                        </div>
-                        <div className="flex gap-2">
-                          <Button 
-                            onClick={saveEdit} 
-                            size="sm"
-                            className="bg-[#F7DD0F] text-black hover:bg-[#F7DD0F]/90"
-                          >
-                            <Save className="w-4 h-4 mr-1" />
-                            Save
-                          </Button>
-                          <Button 
-                            onClick={cancelEdit} 
-                            variant="outline" 
-                            size="sm"
-                            className="border-[#F7DD0F]/30 text-[#F7DD0F] hover:bg-[#F7DD0F]/10"
-                          >
-                            <X className="w-4 h-4 mr-1" />
-                            Cancel
-                          </Button>
-                        </div>
-                      </div>
-                    ) : (
-                      // Display Mode
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <h4 className="font-medium text-white">{image.title}</h4>
-                          <div className="flex gap-2">
-                            <Button
-                              onClick={() => startEditing(image)}
-                              variant="outline"
+                          
+                          <div className="flex items-center justify-between p-3 sm:p-4 bg-white/5 rounded-lg sm:rounded-xl border border-white/20">
+                            <div>
+                              <Label className="text-sm sm:text-base font-semibold text-white">Show Content</Label>
+                              <p className="text-xs sm:text-sm text-gray-400 mt-1">
+                                Display title, subtitle, and description on this carousel slide
+                              </p>
+                            </div>
+                            <Switch
+                              checked={editForm.show_content !== false}
+                              onCheckedChange={(checked) => setEditForm({ ...editForm, show_content: checked })}
+                              className="data-[state=checked]:bg-blue-500 data-[state=unchecked]:bg-gray-600"
+                            />
+                          </div>
+                          
+                          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+                            <Button 
+                              onClick={saveEdit} 
                               size="sm"
-                              className="border-[#F7DD0F]/30 text-[#F7DD0F] hover:bg-[#F7DD0F]/10"
+                              className="bg-blue-600 hover:bg-blue-700 text-white h-10 sm:h-12"
                             >
-                              <Edit className="w-4 h-4 mr-1" />
-                              Edit
+                              <Save className="w-4 h-4 mr-2" />
+                              Save Changes
                             </Button>
-                            <Button
-                              onClick={() => handleDelete(image.id)}
-                              variant="destructive"
+                            <Button 
+                              onClick={cancelEdit} 
+                              variant="outline" 
                               size="sm"
-                              className="bg-red-600/20 border-red-500/30 text-red-400 hover:bg-red-600/30"
+                              className="border-white/20 text-white hover:bg-white/10 h-10 sm:h-12"
                             >
-                              <Trash2 className="w-4 h-4 mr-1" />
-                              Delete
+                              <X className="w-4 h-4 mr-2" />
+                              Cancel
                             </Button>
                           </div>
                         </div>
-                        {image.subtitle && (
-                          <p className="text-sm text-gray-300">{image.subtitle}</p>
-                        )}
-                        {image.description && (
-                          <p className="text-sm text-gray-400 line-clamp-2">{image.description}</p>
-                        )}
-                        <div className="flex items-center gap-4 text-sm text-gray-400">
-                          <span className={`px-2 py-1 rounded text-xs font-medium ${
-                            image.is_active 
-                              ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
-                              : 'bg-gray-500/20 text-gray-400 border border-gray-500/30'
-                          }`}>
-                            {image.is_active ? 'Active' : 'Inactive'}
-                          </span>
-                          <span>Order: {image.display_order}</span>
-                          {image.button_text && (
-                            <span>Button: {image.button_text}</span>
+                      ) : (
+                        // Display Mode
+                        <div className="space-y-3 sm:space-y-4">
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+                            <div className="flex-1 min-w-0">
+                              <h4 className="font-semibold text-white text-sm sm:text-base truncate">{image.title}</h4>
+                              {image.subtitle && (
+                                <p className="text-sm text-gray-300 truncate">{image.subtitle}</p>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Button
+                                onClick={() => startEditing(image)}
+                                variant="outline"
+                                size="sm"
+                                className="border-white/20 text-white hover:bg-white/10 h-10 px-3 sm:px-4"
+                              >
+                                <Edit className="w-4 h-4 mr-1 sm:mr-2" />
+                                <span className="text-xs sm:text-sm">Edit</span>
+                              </Button>
+                              <Button
+                                onClick={() => handleDelete(image.id)}
+                                variant="destructive"
+                                size="sm"
+                                className="bg-red-600/20 border-red-500/30 text-red-400 hover:bg-red-600/30 h-10 px-3 sm:px-4"
+                              >
+                                <Trash2 className="w-4 h-4 mr-1 sm:mr-2" />
+                                <span className="text-xs sm:text-sm">Delete</span>
+                              </Button>
+                            </div>
+                          </div>
+                          
+                          {image.description && (
+                            <p className="text-sm text-gray-400 line-clamp-2">{image.description}</p>
                           )}
-                          {image.button_link && (
-                            <span className="text-[#F7DD0F]">Link: {image.button_link}</span>
-                          )}
+                          
+                          <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-400">
+                            <span className={`px-2 py-1 rounded text-xs font-medium ${
+                              image.is_active 
+                                ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
+                                : 'bg-gray-500/20 text-gray-400 border border-gray-500/30'
+                            }`}>
+                              {image.is_active ? 'Active' : 'Inactive'}
+                            </span>
+                            <span>Order: {image.display_order}</span>
+                            {image.button_text && (
+                              <span>Button: {image.button_text}</span>
+                            )}
+                            {image.button_link && (
+                              <span className="text-blue-400 truncate">Link: {image.button_link}</span>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
-                </div>
-              </Card>
-            ))
+                </Card>
+              ))}
+            </div>
           )}
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </div>
   )
 }
