@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "name": "Gaming Keyboard Pro",
+    "price": 129.99,
+    "original_price": 159.99,
+    "image_url": "/products/keyboard.png",
+    "category": "keyboards",
+    "rating": 4.8,
+    "reviews": 245,
+    "description": "Premium mechanical gaming keyboard with RGB lighting and programmable keys",
+    "features": ["Mechanical switches", "RGB lighting", "Programmable keys", "Wrist rest"],
+    "in_stock": true,
+    "discount": 19,
+    "hidden_on_home": false
+  },
+  {
+    "id": 2,
+    "name": "Wireless Gaming Mouse",
+    "price": 89.99,
+    "original_price": 119.99,
+    "image_url": "/products/mouse.png",
+    "category": "mice",
+    "rating": 4.7,
+    "reviews": 189,
+    "description": "High-precision wireless gaming mouse with adjustable DPI",
+    "features": ["Wireless", "Adjustable DPI", "RGB lighting", "Ergonomic design"],
+    "in_stock": true,
+    "discount": 25,
+    "hidden_on_home": false
+  },
+  {
+    "id": 3,
+    "name": "Gaming Headset Elite",
+    "price": 149.99,
+    "original_price": 199.99,
+    "image_url": "/products/headphones.png",
+    "category": "audio",
+    "rating": 4.9,
+    "reviews": 312,
+    "description": "Premium gaming headset with 7.1 surround sound and noise cancellation",
+    "features": ["7.1 Surround", "Noise cancellation", "Detachable mic", "Comfortable padding"],
+    "in_stock": true,
+    "discount": 25,
+    "hidden_on_home": false
+  },
+  {
+    "id": 4,
+    "name": "Studio Monitor Speakers",
+    "price": 299.99,
+    "original_price": 399.99,
+    "image_url": "/products/speaker.png",
+    "category": "audio",
+    "rating": 4.6,
+    "reviews": 156,
+    "description": "Professional studio monitor speakers for accurate sound reproduction",
+    "features": ["Studio quality", "Bi-amped", "XLR inputs", "Frequency response 45Hz-22kHz"],
+    "in_stock": true,
+    "discount": 25,
+    "hidden_on_home": false
+  }
+]

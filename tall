@@ -1,0 +1,5 @@
+[33m0eba6b1[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m Fix Netlify deployment: Update pnpm-lock.yaml to sync with package.json - Resolves ERR_PNPM_OUTDATED_LOCKFILE error - Added framer-motion@^12.23.12 dependency - Ensures build dependencies are properly locked
+[33m00c65f3[m Add clickable hero carousel with admin management - Implemented clickable carousel slides that redirect to product pages - Added hero image management admin panel with link URL support - Created hero image upload, edit, and delete functionality - Added database schema for hero_images table with button_link field - Integrated carousel with Supabase backend for dynamic content
+[33m24729f1[m Fix product image display - use image_url instead of image property
+[33md1d00bb[m Add marquee pause/resume functionality with custom hook and enhanced user interactions
+[33md665abf[m Fixes with Netlify
