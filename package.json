@@ -13,8 +13,10 @@
     "start": "next start",
     "analyze": "ANALYZE=true next build",
     "type-check": "tsc --noEmit",
-    "build:check": "node scripts/check-static-assets.js && pnpm build",
-    "fix:deployment": "node scripts/fix-deployment-issues.js"
+    "build:check": "node scripts/check-static-assets.js && npm run build",
+    "fix:deployment": "node scripts/fix-deployment-issues.js",
+    "build:netlify": "npm install --legacy-peer-deps && next build",
+    "debug:deployment": "node scripts/debug-deployment.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

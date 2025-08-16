@@ -35,14 +35,6 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
     // Removed optimizeCss and other problematic features
-    turbo: {
-      rules: {
-        '*.svg': {
-          loaders: ['@svgr/webpack'],
-          as: '*.js',
-        },
-      },
-    },
   },
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
@@ -107,11 +99,14 @@ const nextConfig = {
       config.optimization.sideEffects = false;
     }
     
-    // SVG optimization
-    config.module.rules.push({
-      test: /\.svg$/,
-      use: ['@svgr/webpack'],
-    });
+    // SVG optimization - only add if not already present
+    const svgRule = config.module.rules.find(rule => rule.test && rule.test.toString().includes('svg'));
+    if (!svgRule) {
+      config.module.rules.push({
+        test: /\.svg$/,
+        use: ['@svgr/webpack'],
+      });
+    }
     
     return config;
   },
