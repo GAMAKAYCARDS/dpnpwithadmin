@@ -1,6 +1,26 @@
 import { getProductById, getProducts } from "@/lib/products-data"
 import ProductPageClient from "./product-page-client"
 
+// Generate static params for all product IDs
+export async function generateStaticParams() {
+  try {
+    const products = await getProducts()
+    return products.map((product) => ({
+      id: product.id.toString(),
+    }))
+  } catch (error) {
+    console.error('Error generating static params:', error)
+    // Fallback to known product IDs if fetch fails
+    return [
+      { id: '1' },
+      { id: '2' },
+      { id: '3' },
+      { id: '4' },
+      { id: '5' },
+    ]
+  }
+}
+
 interface ProductPageProps {
   params: Promise<{
     id: string
