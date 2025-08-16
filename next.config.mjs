@@ -48,38 +48,7 @@ const nextConfig = {
   reactStrictMode: true,
   // Asset optimization
   assetPrefix: process.env.NODE_ENV === 'production' ? '' : '',
-  // MIME type handling for static assets
-  async headers() {
-    return [
-      {
-        source: '/(.*)',
-        headers: [
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
-          },
-        ],
-      },
-      {
-        source: '/(.*)\\.css',
-        headers: [
-          {
-            key: 'Content-Type',
-            value: 'text/css',
-          },
-        ],
-      },
-      {
-        source: '/(.*)\\.js',
-        headers: [
-          {
-            key: 'Content-Type',
-            value: 'application/javascript',
-          },
-        ],
-      },
-    ];
-  },
+
   // Bundle analyzer
   ...(process.env.ANALYZE === 'true' && {
     webpack: (config) => {
