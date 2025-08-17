@@ -15,7 +15,6 @@
     "type-check": "tsc --noEmit",
     "build:check": "node scripts/check-static-assets.js && npm run build",
     "fix:deployment": "node scripts/fix-deployment-issues.js",
-
     "debug:deployment": "node scripts/debug-deployment.js",
     "test:build": "node test-build.js"
   },
@@ -55,6 +54,7 @@
     "clsx": "^2.1.1",
     "cmdk": "1.0.4",
     "date-fns": "4.1.0",
+    "dotenv": "^17.2.1",
     "embla-carousel-react": "8.5.1",
     "framer-motion": "^12.23.12",
     "fs-extra": "^11.3.1",

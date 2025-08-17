@@ -168,45 +168,28 @@ export function OrdersManager() {
       setUpdatingStatus(true)
       console.log(`🔄 Updating order ${orderId} status to: ${newStatus}`)
       
-      const response = await fetch('/api/orders', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          orderId,
-          order_status: newStatus
-        })
-      })
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`)
-      }
-
-      const result = await response.json()
+      // Use client-side service instead of API route
+      const { ordersClient } = await import('@/lib/orders-client')
+      const updatedOrder = await ordersClient.updateOrderStatus(orderId, newStatus)
       
-      if (result.success) {
-        console.log('✅ Order status updated successfully')
-        
-        // Update the order in the local state
-        setOrders(prevOrders => 
-          prevOrders.map(order => 
-            order.id === orderId 
-              ? { ...order, order_status: newStatus }
-              : order
-          )
+      console.log('✅ Order status updated successfully')
+      
+      // Update the order in the local state
+      setOrders(prevOrders => 
+        prevOrders.map(order => 
+          order.id === orderId 
+            ? { ...order, order_status: newStatus }
+            : order
         )
-        
-        // Update the selected order if it's the same one
-        if (selectedOrder && selectedOrder.id === orderId) {
-          setSelectedOrder(prev => prev ? { ...prev, order_status: newStatus } : null)
-        }
-        
-        // Show success message
-        alert(`Order status updated to: ${newStatus}`)
-      } else {
-        throw new Error(result.error || 'Failed to update order status')
+      )
+      
+      // Update the selected order if it's the same one
+      if (selectedOrder && selectedOrder.id === orderId) {
+        setSelectedOrder(prev => prev ? { ...prev, order_status: newStatus } : null)
       }
+      
+      // Show success message
+      alert(`Order status updated to: ${newStatus}`)
     } catch (error) {
       console.error('❌ Error updating order status:', error)
       alert(`Failed to update order status: ${error instanceof Error ? error.message : 'Unknown error'}`)

@@ -6,8 +6,8 @@ const __dirname = path.dirname(__filename)
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Use static export for Netlify
-  ...(process.env.NODE_ENV === 'production' && {
+  // Only use static export for production builds, not development
+  ...(process.env.NODE_ENV === 'production' && process.env.STATIC_EXPORT === 'true' && {
     output: 'export',
     trailingSlash: true,
     distDir: 'out',

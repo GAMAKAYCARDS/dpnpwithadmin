@@ -1,5 +1,4 @@
 import { supabase } from './supabase'
-import { emailService } from './email-service'
 
 interface CheckoutData {
   orderId: string
@@ -17,12 +16,12 @@ interface CheckoutData {
     name: string
     price: number
     quantity: number
-    image: string
+    image_url: string
   }>
   total: number
   paymentOption: 'full' | 'deposit'
-  receiptFile?: string // base64 encoded file
-  receiptFileName?: string
+  receiptFile?: string | null // base64 encoded file
+  receiptFileName?: string | null
 }
 
 export const checkoutClient = {
@@ -143,20 +142,42 @@ export const checkoutClient = {
 
       console.log('✅ Order items added successfully')
 
-      // Send notification email (optional - can be handled separately)
+      // Send order emails via API route
+      console.log('📧 Sending order emails...')
       try {
-        await this.sendNotificationEmail(orderData, order.id, receiptUrl)
-        console.log('✅ Notification email sent')
-      } catch (error) {
-        console.error('❌ Error sending notification email:', error)
-        // Don't fail the order if email fails
+        const emailData = {
+          orderId: orderData.orderId,
+          orderDbId: order.id as number,
+          customerInfo: orderData.customerInfo,
+          cart: orderData.cart,
+          total: orderData.total,
+          paymentOption: orderData.paymentOption,
+          receiptUrl: receiptUrl || null
+        }
+
+        const emailResponse = await fetch('/api/send-order-emails', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(emailData)
+        })
+
+        if (emailResponse.ok) {
+          const emailResult = await emailResponse.json()
+          console.log('✅ Order emails sent successfully:', emailResult)
+        } else {
+          console.warn('⚠️ Failed to send order emails:', await emailResponse.text())
+        }
+      } catch (emailError) {
+        console.warn('⚠️ Error sending order emails:', emailError)
       }
 
       return {
         success: true,
         orderId: orderData.orderId,
-        orderDbId: order.id,
-        receiptUrl,
+        orderDbId: order.id as number,
+        receiptUrl: receiptUrl || undefined,
         message: 'Order submitted successfully to Supabase database'
       }
 
@@ -170,45 +191,9 @@ export const checkoutClient = {
     }
   },
 
-  // Function to send notification emails using Resend
-  async sendNotificationEmail(orderData: CheckoutData, orderDbId: number, receiptUrl: string | null) {
-    try {
-      console.log('📧 Sending notification emails for order:', orderDbId)
-      
-      // Send both customer confirmation and admin notification emails
-      const emailResults = await emailService.sendOrderEmails(
-        {
-          orderId: orderData.orderId,
-          customerInfo: orderData.customerInfo,
-          cart: orderData.cart,
-          total: orderData.total,
-          paymentOption: orderData.paymentOption,
-          receiptUrl
-        },
-        orderDbId,
-        process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'admin@example.com' // Use public env var
-      )
-
-      // Log results
-      if (emailResults.customerEmail.success) {
-        console.log('✅ Customer confirmation email sent successfully')
-      } else {
-        console.warn('⚠️ Customer confirmation email failed:', emailResults.customerEmail.error)
-      }
-
-      if (emailResults.adminEmail.success) {
-        console.log('✅ Admin notification email sent successfully')
-      } else {
-        console.warn('⚠️ Admin notification email failed:', emailResults.adminEmail.error)
-      }
-
-      return emailResults
-    } catch (error) {
-      console.error('❌ Error sending notification emails:', error)
-      return {
-        customerEmail: { success: false, message: 'Email service error', error: error instanceof Error ? error.message : 'Unknown error' },
-        adminEmail: { success: false, message: 'Email service error', error: error instanceof Error ? error.message : 'Unknown error' }
-      }
-    }
-  }
+  // Note: Email functionality removed for client-side compatibility
+  // Email notifications should be handled via:
+  // 1. Supabase Edge Functions
+  // 2. Webhooks
+  // 3. Server-side API routes (when not using static export)
 }

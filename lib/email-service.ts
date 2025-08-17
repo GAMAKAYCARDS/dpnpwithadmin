@@ -17,7 +17,7 @@ interface OrderData {
     name: string
     price: number
     quantity: number
-    image: string
+    image_url: string
   }>
   total: number
   paymentOption: 'full' | 'deposit'

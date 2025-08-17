@@ -150,17 +150,11 @@ export default function SupabaseCheckout({ isOpen, onClose, cart, total, onCartR
         hasReceipt: !!receiptFile
       })
 
-      const response = await fetch('/api/supabase-checkout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(orderData),
-      })
+      // Use client-side service instead of API route
+      const { checkoutClient } = await import('@/lib/checkout-client')
+      const result = await checkoutClient.submitOrder(orderData)
 
-      const result = await response.json()
-
-      if (response.ok && result.success) {
+      if (result.success) {
         console.log('✅ Order submitted successfully to Supabase:', result)
         return true
       } else {
@@ -168,7 +162,7 @@ export default function SupabaseCheckout({ isOpen, onClose, cart, total, onCartR
         return false
       }
     } catch (error) {
-      console.error('Error submitting to Supabase API:', error)
+      console.error('Error submitting to Supabase:', error)
       return false
     } finally {
       setIsSubmitting(false)
@@ -218,7 +212,14 @@ export default function SupabaseCheckout({ isOpen, onClose, cart, total, onCartR
           console.log('✅ Order submitted successfully to Supabase!')
           console.log('📋 Order ID:', orderId)
           
-          alert('✅ Order submitted successfully! Check your email for confirmation.')
+          // Show success message with email info
+          const emailMessage = '✅ Order submitted successfully!\n\n' +
+            '📧 Email notifications have been sent to:\n' +
+            `• Customer: ${customerInfo.email}\n` +
+            '• Admin: dopetechnp@gmail.com\n\n' +
+            'Please check your email for order confirmation.'
+          
+          alert(emailMessage)
         } else {
           console.error('Supabase checkout submission failed')
           alert('❌ Order submission failed! Check browser console for details and try again.')
@@ -514,23 +515,29 @@ export default function SupabaseCheckout({ isOpen, onClose, cart, total, onCartR
                     Scan QR Code to Pay
                   </h3>
                   <div className="bg-white/5 rounded-lg p-6 border border-white/10 text-center">
-                                         <div className="w-56 h-80 mx-auto bg-white rounded-lg p-4 mb-4">
-                       {/* Replace this with your actual payment QR code */}
-                       <img 
-                         src="/payment/paymentQR.svg" 
-                         alt="Payment QR Code"
-                         className="w-full h-full object-contain"
-                         onError={(e) => {
-                           // Fallback if QR code image fails to load
-                           const target = e.target as HTMLImageElement;
-                           target.style.display = 'none';
-                           target.nextElementSibling?.classList.remove('hidden');
-                         }}
-                       />
-                       <div className="w-full h-full bg-gray-200 rounded flex items-center justify-center hidden">
-                         <span className="text-gray-500 text-sm">QR Code Here</span>
-                       </div>
-                     </div>
+                    <div className="w-56 h-80 mx-auto bg-white rounded-lg p-4 mb-4 relative">
+                      {/* Payment QR Code */}
+                      <img 
+                        src="/payment/paymentQR.svg" 
+                        alt="Payment QR Code"
+                        className="w-full h-full object-contain"
+                        onError={(e) => {
+                          // Fallback if QR code image fails to load
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                          const fallback = target.parentElement?.querySelector('.qr-fallback');
+                          if (fallback) {
+                            fallback.classList.remove('hidden');
+                          }
+                        }}
+                      />
+                      {/* Fallback QR Code Display */}
+                      <div className="qr-fallback w-full h-full bg-gray-100 rounded flex flex-col items-center justify-center hidden">
+                        <QrCode className="w-16 h-16 text-gray-400 mb-2" />
+                        <span className="text-gray-500 text-sm font-medium">Payment QR Code</span>
+                        <span className="text-gray-400 text-xs mt-1">Amount: Rs {paymentAmount.toLocaleString()}</span>
+                      </div>
+                    </div>
                     <p className="text-gray-300 text-sm mb-2">Scan this QR code with your payment app</p>
                     <p className="text-[#F7DD0F] font-semibold">Amount: Rs {paymentAmount.toLocaleString()}</p>
                   </div>
