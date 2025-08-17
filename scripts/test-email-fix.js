@@ -69,7 +69,7 @@ async function testGmail() {
   }
 
   try {
-    const transporter = nodemailer.createTransporter({
+    const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
         user: process.env.GMAIL_USER,
@@ -167,13 +167,13 @@ async function testOrderEmail() {
 
     // Test Gmail for customer email
     if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
-      const transporter = nodemailer.createTransporter({
-        service: 'gmail',
-        auth: {
-          user: process.env.GMAIL_USER,
-          pass: process.env.GMAIL_APP_PASSWORD
-        }
-      });
+             const transporter = nodemailer.createTransport({
+         service: 'gmail',
+         auth: {
+           user: process.env.GMAIL_USER,
+           pass: process.env.GMAIL_APP_PASSWORD
+         }
+       });
 
       const customerEmailHtml = `
         <h1>✅ Order Confirmation</h1>

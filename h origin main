@@ -1,0 +1,5 @@
+[33m29e01b1[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Fix email service and QR code issues for Netlify deployment
+[33mc9ac815[m Update project with latest changes and documentation
+[33m6fe6088[m Fix Netlify deployment - Remove API routes for static export - Update Next.js config for proper static export - All pages now generate as static HTML - Build creates proper 'out' directory for Netlify
+[33mf18b222[m Fix email functionality and Netlify deployment configuration - Add email sending to checkout flow - Fix payment QR code display - Update Next.js config for static export - Add email setup documentation and test scripts
+[33m3a96d04[m Fix page not found: Switch to static export with client-side services and proper API route configuration

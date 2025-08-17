@@ -88,6 +88,13 @@ export class EmailService {
    */
   private generateCustomerEmailHTML(orderData: OrderData): string {
     const depositAmount = orderData.paymentOption === 'deposit' ? Math.max(1, Math.round(orderData.total * 0.10)) : 0
+    const orderDate = new Date().toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
     
     return `
       <!DOCTYPE html>
@@ -136,6 +143,36 @@ export class EmailService {
               margin: 0;
               color: #0c4a6e;
               font-size: 18px;
+            }
+            .order-details {
+              background-color: #f8fafc;
+              border: 1px solid #e2e8f0;
+              border-radius: 8px;
+              padding: 20px;
+              margin: 20px 0;
+            }
+            .order-details h3 {
+              margin: 0 0 15px 0;
+              color: #1e293b;
+              font-size: 16px;
+            }
+            .detail-row {
+              display: flex;
+              justify-content: space-between;
+              margin: 8px 0;
+              padding: 8px 0;
+              border-bottom: 1px solid #f1f5f9;
+            }
+            .detail-row:last-child {
+              border-bottom: none;
+            }
+            .detail-label {
+              font-weight: 500;
+              color: #64748b;
+            }
+            .detail-value {
+              font-weight: 600;
+              color: #1e293b;
             }
             .section {
               margin: 25px 0;
@@ -227,6 +264,25 @@ export class EmailService {
               margin: 8px 0;
               color: #6b7280;
             }
+            .next-steps {
+              background-color: #eff6ff;
+              border: 1px solid #3b82f6;
+              border-radius: 8px;
+              padding: 20px;
+              margin: 20px 0;
+            }
+            .next-steps h4 {
+              margin: 0 0 15px 0;
+              color: #1e40af;
+            }
+            .next-steps ul {
+              margin: 0;
+              padding-left: 20px;
+              color: #1e40af;
+            }
+            .next-steps li {
+              margin: 8px 0;
+            }
           </style>
         </head>
         <body>
@@ -241,6 +297,29 @@ export class EmailService {
               <p style="margin: 10px 0 0 0; font-size: 16px; color: #0c4a6e;">
                 Order ID: <strong>${orderData.orderId}</strong>
               </p>
+              <p style="margin: 5px 0 0 0; font-size: 14px; color: #6b7280;">
+                Placed on: ${orderDate}
+              </p>
+            </div>
+
+            <div class="order-details">
+              <h3>📋 Order Summary</h3>
+              <div class="detail-row">
+                <span class="detail-label">Order ID:</span>
+                <span class="detail-value">${orderData.orderId}</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Order Date:</span>
+                <span class="detail-value">${orderDate}</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Payment Method:</span>
+                <span class="detail-value">${orderData.paymentOption === 'full' ? 'Full Payment' : '10% Deposit'}</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Total Items:</span>
+                <span class="detail-value">${orderData.cart.reduce((sum, item) => sum + item.quantity, 0)}</span>
+              </div>
             </div>
 
             <div class="section">
@@ -254,10 +333,10 @@ export class EmailService {
                 <div class="item">
                   <div>
                     <div class="item-name">${item.name}</div>
-                    <div class="item-details">Quantity: ${item.quantity}</div>
+                    <div class="item-details">Quantity: ${item.quantity} × Rs ${item.price.toLocaleString()}</div>
                   </div>
                   <div style="font-weight: bold; color: #059669;">
-                    Rs ${item.price.toLocaleString()}
+                    Rs ${(item.price * item.quantity).toLocaleString()}
                   </div>
                 </div>
               `).join('')}
@@ -266,6 +345,11 @@ export class EmailService {
             <div class="total">
               <h3>💰 Total Amount</h3>
               <div class="total-amount">Rs ${orderData.total.toLocaleString()}</div>
+              ${orderData.paymentOption === 'deposit' ? `
+                <p style="margin: 10px 0 0 0; color: #92400e; font-size: 14px;">
+                  Deposit Required: Rs ${depositAmount.toLocaleString()}
+                </p>
+              ` : ''}
             </div>
 
             <div class="payment-info">
@@ -276,6 +360,9 @@ export class EmailService {
               ${orderData.paymentOption === 'deposit' ? `
                 <p style="margin: 10px 0 0 0; color: #166534;">
                   <strong>Deposit Amount:</strong> Rs ${depositAmount.toLocaleString()}
+                </p>
+                <p style="margin: 5px 0 0 0; color: #166534; font-size: 14px;">
+                  <strong>Remaining Balance:</strong> Rs ${(orderData.total - depositAmount).toLocaleString()}
                 </p>
               ` : ''}
             </div>
@@ -308,13 +395,14 @@ export class EmailService {
               </div>
             </div>
 
-            <div class="section">
-              <h3>🚚 What's Next?</h3>
-              <ul style="padding-left: 20px; color: #374151;">
-                <li>We'll review your order and payment</li>
-                <li>You'll receive updates on your order status</li>
+            <div class="next-steps">
+              <h4>🚚 What's Next?</h4>
+              <ul>
+                <li>We'll review your order and payment within 24 hours</li>
+                <li>You'll receive updates on your order status via email</li>
                 <li>We'll contact you to arrange delivery or pickup</li>
-                <li>Your gaming gear will be ready soon!</li>
+                <li>Your gaming gear will be prepared and ready soon!</li>
+                <li>For any questions, contact us at dopetechnp@gmail.com</li>
               </ul>
             </div>
 
@@ -336,6 +424,13 @@ export class EmailService {
    */
   private generateAdminEmailHTML(orderData: OrderData, orderDbId: number): string {
     const depositAmount = orderData.paymentOption === 'deposit' ? Math.max(1, Math.round(orderData.total * 0.10)) : 0
+    const orderDate = new Date().toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
     
     return `
       <!DOCTYPE html>
@@ -394,6 +489,39 @@ export class EmailService {
               margin: 0;
               color: #991b1b;
               font-size: 20px;
+            }
+            .order-summary {
+              background-color: #f8fafc;
+              border: 1px solid #e2e8f0;
+              border-radius: 8px;
+              padding: 20px;
+              margin: 20px 0;
+            }
+            .order-summary h3 {
+              margin: 0 0 15px 0;
+              color: #1e293b;
+              font-size: 16px;
+            }
+            .summary-grid {
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 15px;
+            }
+            .summary-item {
+              padding: 10px;
+              background-color: #f1f5f9;
+              border-radius: 6px;
+            }
+            .summary-label {
+              font-weight: 500;
+              color: #64748b;
+              font-size: 14px;
+            }
+            .summary-value {
+              font-weight: 600;
+              color: #1e293b;
+              font-size: 16px;
+              margin-top: 5px;
             }
             .section {
               margin: 25px 0;
@@ -539,6 +667,25 @@ export class EmailService {
               margin: 0 0 10px 0;
               color: #991b1b;
             }
+            .next-steps {
+              background-color: #eff6ff;
+              border: 1px solid #3b82f6;
+              border-radius: 8px;
+              padding: 20px;
+              margin: 20px 0;
+            }
+            .next-steps h4 {
+              margin: 0 0 15px 0;
+              color: #1e40af;
+            }
+            .next-steps ul {
+              margin: 0;
+              padding-left: 20px;
+              color: #1e40af;
+            }
+            .next-steps li {
+              margin: 8px 0;
+            }
           </style>
         </head>
         <body>
@@ -555,14 +702,44 @@ export class EmailService {
                 Order ID: <strong>${orderData.orderId}</strong>
               </p>
               <p style="margin: 5px 0 0 0; font-size: 14px; color: #6b7280;">
-                Database ID: ${orderDbId}
+                Database ID: ${orderDbId} | Placed on: ${orderDate}
               </p>
+            </div>
+
+            <div class="order-summary">
+              <h3>📋 Quick Order Summary</h3>
+              <div class="summary-grid">
+                <div class="summary-item">
+                  <div class="summary-label">Order ID</div>
+                  <div class="summary-value">${orderData.orderId}</div>
+                </div>
+                <div class="summary-item">
+                  <div class="summary-label">Order Date</div>
+                  <div class="summary-value">${orderDate}</div>
+                </div>
+                <div class="summary-item">
+                  <div class="summary-label">Payment Method</div>
+                  <div class="summary-value">${orderData.paymentOption === 'full' ? 'Full Payment' : '10% Deposit'}</div>
+                </div>
+                <div class="summary-item">
+                  <div class="summary-label">Total Items</div>
+                  <div class="summary-value">${orderData.cart.reduce((sum, item) => sum + item.quantity, 0)}</div>
+                </div>
+                <div class="summary-item">
+                  <div class="summary-label">Total Amount</div>
+                  <div class="summary-value">Rs ${orderData.total.toLocaleString()}</div>
+                </div>
+                <div class="summary-item">
+                  <div class="summary-label">Customer Email</div>
+                  <div class="summary-value">${orderData.customerInfo.email}</div>
+                </div>
+              </div>
             </div>
 
             <div class="urgent-note">
               <h4>⚠️ Action Required</h4>
               <p style="margin: 0; color: #991b1b;">
-                A new order has been placed. Please review the details and take appropriate action.
+                A new order has been placed. Please review the details and take appropriate action within 24 hours.
               </p>
             </div>
 
@@ -609,10 +786,10 @@ export class EmailService {
                 <div class="item">
                   <div>
                     <div class="item-name">${item.name}</div>
-                    <div class="item-details">Quantity: ${item.quantity}</div>
+                    <div class="item-details">Quantity: ${item.quantity} × Rs ${item.price.toLocaleString()}</div>
                   </div>
                   <div class="item-price">
-                    Rs ${item.price.toLocaleString()}
+                    Rs ${(item.price * item.quantity).toLocaleString()}
                   </div>
                 </div>
               `).join('')}
@@ -624,6 +801,14 @@ export class EmailService {
               <p style="margin: 10px 0 0 0; color: #92400e;">
                 Total Order Value
               </p>
+              ${orderData.paymentOption === 'deposit' ? `
+                <p style="margin: 10px 0 0 0; color: #92400e; font-size: 14px;">
+                  Deposit Required: Rs ${depositAmount.toLocaleString()}
+                </p>
+                <p style="margin: 5px 0 0 0; color: #92400e; font-size: 14px;">
+                  Remaining Balance: Rs ${(orderData.total - depositAmount).toLocaleString()}
+                </p>
+              ` : ''}
             </div>
 
             <div class="payment-details">
@@ -667,14 +852,15 @@ export class EmailService {
               </a>
             </div>
 
-            <div class="section">
-              <h3>📋 Next Steps</h3>
-              <ul style="padding-left: 20px; color: #374151;">
-                <li>Review the order details and payment</li>
-                <li>Contact customer to confirm order</li>
-                <li>Arrange delivery or pickup</li>
+            <div class="next-steps">
+              <h4>📋 Next Steps</h4>
+              <ul>
+                <li>Review the order details and payment verification</li>
+                <li>Contact customer to confirm order within 24 hours</li>
+                <li>Arrange delivery or pickup based on customer preference</li>
                 <li>Update order status in admin panel</li>
-                <li>Process payment verification</li>
+                <li>Process payment verification and receipt review</li>
+                <li>Prepare items for delivery/pickup</li>
               </ul>
             </div>
 
@@ -699,10 +885,16 @@ export class EmailService {
     orderDbId: number
   ): Promise<EmailResult> {
     try {
-      // Try Gmail SMTP first (for any email address)
+      console.log('📧 Starting customer confirmation email...')
+      console.log('📧 Order ID:', orderData.orderId)
+      console.log('📧 Customer Email:', orderData.customerInfo.email)
+      console.log('📧 Customer Name:', orderData.customerInfo.fullName)
+      console.log('📧 Order Total:', orderData.total)
+      console.log('📧 Payment Option:', orderData.paymentOption)
+      
+      // Try Gmail SMTP first (for customer emails)
       if (this.gmailTransporter) {
-        console.log('📧 Sending customer email via Gmail SMTP...')
-        console.log('📧 Customer email address:', orderData.customerInfo.email)
+        console.log('📧 Attempting to send customer email via Gmail SMTP...')
         console.log('📧 Gmail user:', process.env.GMAIL_USER)
         
         const emailHtml = this.generateCustomerEmailHTML(orderData)
@@ -717,8 +909,10 @@ export class EmailService {
 
         try {
           const info = await this.gmailTransporter.sendMail(mailOptions)
-          console.log('✅ Customer confirmation email sent successfully via Gmail:', info.messageId)
-          console.log('📧 Customer email sent to:', orderData.customerInfo.email)
+          console.log('✅ Customer confirmation email sent successfully via Gmail')
+          console.log('📧 Message ID:', info.messageId)
+          console.log('📧 Sent to:', orderData.customerInfo.email)
+          console.log('📧 Order ID in subject:', orderData.orderId)
           return {
             success: true,
             message: 'Customer confirmation email sent successfully via Gmail'
@@ -730,9 +924,9 @@ export class EmailService {
         }
       }
 
-      // Fallback to Resend (for any email address)
+      // Fallback to Resend (for customer emails)
       if (this.resend) {
-        console.log('📧 Sending customer email via Resend...')
+        console.log('📧 Sending customer email via Resend fallback...')
         console.log('📧 Customer email address:', orderData.customerInfo.email)
         
         const emailHtml = this.generateCustomerEmailHTML(orderData)
@@ -758,8 +952,10 @@ export class EmailService {
           }
         }
 
-        console.log('✅ Customer confirmation email sent successfully via Resend:', data?.id)
-        console.log('📧 Customer email sent to:', orderData.customerInfo.email)
+        console.log('✅ Customer confirmation email sent successfully via Resend')
+        console.log('📧 Email ID:', data?.id)
+        console.log('📧 Sent to:', orderData.customerInfo.email)
+        console.log('📧 Order ID in subject:', orderData.orderId)
         return {
           success: true,
           message: 'Customer confirmation email sent successfully via Resend'
@@ -791,8 +987,14 @@ export class EmailService {
     adminEmail?: string
   ): Promise<EmailResult> {
     try {
+      console.log('📧 Starting admin notification email...')
+      console.log('📧 Order ID:', orderData.orderId)
+      console.log('📧 Database ID:', orderDbId)
+      console.log('📧 Admin Email:', adminEmail || process.env.ADMIN_EMAIL)
+      console.log('📧 Customer Email:', orderData.customerInfo.email)
+      
       if (!this.resend) {
-        console.warn('⚠️ Email service not configured - skipping admin email')
+        console.warn('⚠️ Resend not configured - skipping admin email')
         return {
           success: false,
           message: 'Email service not configured',
@@ -802,6 +1004,7 @@ export class EmailService {
 
       // Use admin email from env or fallback to customer email for testing
       const recipientEmail = adminEmail || process.env.ADMIN_EMAIL || orderData.customerInfo.email
+      console.log('📧 Final recipient email:', recipientEmail)
 
       // Generate email HTML
       const emailHtml = this.generateAdminEmailHTML(orderData, orderDbId)
@@ -827,7 +1030,10 @@ export class EmailService {
         }
       }
 
-      console.log('✅ Admin notification email sent successfully:', data?.id)
+      console.log('✅ Admin notification email sent successfully')
+      console.log('📧 Email ID:', data?.id)
+      console.log('📧 Sent to:', recipientEmail)
+      console.log('📧 Order ID in subject:', orderData.orderId)
       return {
         success: true,
         message: 'Admin notification email sent successfully'

@@ -6,14 +6,13 @@ const __dirname = path.dirname(__filename)
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Static export for Netlify deployment
-  output: 'export',
+  // Remove static export for development - we need API routes
+  // output: 'export', // Commented out for development
   trailingSlash: true,
-  distDir: 'out',
   images: {
     unoptimized: true,
   },
-  // Ensure static export works properly
+  // Ensure proper routing
   skipTrailingSlashRedirect: true,
   skipMiddlewareUrlNormalize: true,
   // Exclude API routes from static export
