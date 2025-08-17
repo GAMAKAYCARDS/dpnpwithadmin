@@ -4,9 +4,9 @@ import { emailService } from '@/lib/email-service'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { testType, adminEmail } = body
+    const { testType, adminEmail, customerEmail } = body
 
-    console.log('🧪 Testing email service...')
+    console.log('🧪 Testing email service with type:', testType)
 
     if (testType === 'service') {
       // Test basic email service configuration
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
         orderId: 'TEST-123456',
         customerInfo: {
           fullName: 'Test Customer',
-          email: adminEmail || 'test@example.com',
+          email: customerEmail || adminEmail || 'dopetechnp@gmail.com',
           phone: '+9771234567890',
           city: 'Kathmandu',
           state: 'Bagmati',

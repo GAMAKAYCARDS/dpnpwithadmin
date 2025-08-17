@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
+import { emailService } from '@/lib/email-service'
 
 interface CheckoutData {
   orderId: string
@@ -186,9 +187,6 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Import email service
-import { emailService } from '@/lib/email-service'
-
 // Function to send notification emails using Resend
 async function sendNotificationEmail(orderData: CheckoutData, orderDbId: number, receiptUrl: string | null) {
   try {
@@ -204,7 +202,8 @@ async function sendNotificationEmail(orderData: CheckoutData, orderDbId: number,
         paymentOption: orderData.paymentOption,
         receiptUrl
       },
-      orderDbId
+      orderDbId,
+      process.env.ADMIN_EMAIL // Pass the admin email from environment variables
     )
 
     // Log results

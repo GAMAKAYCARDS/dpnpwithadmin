@@ -9,6 +9,7 @@ import { Loader2, Mail, CheckCircle, XCircle } from 'lucide-react'
 
 export default function TestEmailPage() {
   const [adminEmail, setAdminEmail] = useState('')
+  const [customerEmail, setCustomerEmail] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [results, setResults] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
@@ -57,7 +58,8 @@ export default function TestEmailPage() {
         },
         body: JSON.stringify({
           testType: 'order',
-          adminEmail
+          adminEmail,
+          customerEmail: customerEmail || adminEmail // Use customer email if provided, otherwise use admin email
         })
       })
 
@@ -130,6 +132,18 @@ export default function TestEmailPage() {
                 placeholder="admin@example.com"
                 value={adminEmail}
                 onChange={(e) => setAdminEmail(e.target.value)}
+              />
+            </div>
+            <div>
+              <label htmlFor="customerEmail" className="block text-sm font-medium mb-2">
+                Customer Email Address (Optional - will use admin email if not provided)
+              </label>
+              <Input
+                id="customerEmail"
+                type="email"
+                placeholder="customer@example.com"
+                value={customerEmail}
+                onChange={(e) => setCustomerEmail(e.target.value)}
               />
             </div>
             <Button 
