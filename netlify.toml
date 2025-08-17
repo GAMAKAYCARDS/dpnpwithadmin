@@ -6,6 +6,7 @@
 # Ensure functions are built properly
 [functions]
   node_bundler = "esbuild"
+  external_node_modules = ["@supabase/supabase-js", "resend", "nodemailer"]
 
 [build.environment]
   NODE_VERSION = "18.x"
@@ -35,19 +36,19 @@
 [[headers]]
   for = "*.css"
   [headers.values]
-    Content-Type = "text/css"
+    Content-Type = "text/css; charset=utf-8"
     Cache-Control = "public, max-age=31536000, immutable"
 
 [[headers]]
   for = "*.js"
   [headers.values]
-    Content-Type = "application/javascript"
+    Content-Type = "application/javascript; charset=utf-8"
     Cache-Control = "public, max-age=31536000, immutable"
 
 [[headers]]
   for = "*.svg"
   [headers.values]
-    Content-Type = "image/svg+xml"
+    Content-Type = "image/svg+xml; charset=utf-8"
     Cache-Control = "public, max-age=31536000, immutable"
 
 [[headers]]
@@ -117,7 +118,7 @@
 [[headers]]
   for = "/manifest.json"
   [headers.values]
-    Content-Type = "application/manifest+json"
+    Content-Type = "application/manifest+json; charset=utf-8"
     Cache-Control = "public, max-age=3600"
 
 # Redirects for static assets
@@ -146,13 +147,6 @@
   to = "/logo/simple-logo.svg"
   status = 302
   force = true
-
-# Remove the problematic QR code redirect - let the actual QR code load
-# [[redirects]]
-#   from = "/payment/paymentQR.svg"
-#   to = "/placeholder.jpg"
-#   status = 302
-#   force = true
 
 # Handle all routes for Next.js
 [[redirects]]

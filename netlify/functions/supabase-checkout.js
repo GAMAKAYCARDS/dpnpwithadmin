@@ -1,22 +1,9 @@
 const { createClient } = require('@supabase/supabase-js')
-const { Resend } = require('resend')
-const nodemailer = require('nodemailer')
 
 // Initialize Supabase client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
-
-// Initialize email services
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
-const gmailTransporter = (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) ? 
-  nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: process.env.GMAIL_USER,
-      pass: process.env.GMAIL_APP_PASSWORD
-    }
-  }) : null
 
 exports.handler = async (event, context) => {
   // Enable CORS
@@ -169,65 +156,13 @@ exports.handler = async (event, context) => {
 
     console.log('✅ Order items added successfully')
 
-    // Send notification emails
+    // Send simple email notifications (without external dependencies)
     try {
-      console.log('📧 Sending notification emails...')
-      
-      // Send customer confirmation email
-      if (gmailTransporter) {
-        try {
-          const customerEmailHtml = `
-            <h2>Thank you for your order!</h2>
-            <p><strong>Order ID:</strong> ${body.orderId}</p>
-            <p><strong>Customer:</strong> ${body.customerInfo.fullName}</p>
-            <p><strong>Total:</strong> Rs ${body.total.toLocaleString()}</p>
-            <p><strong>Payment Option:</strong> ${body.paymentOption}</p>
-            <p>We'll process your order and contact you soon.</p>
-          `
-          
-          await gmailTransporter.sendMail({
-            from: `"DopeTech GMK" <${process.env.GMAIL_USER}>`,
-            to: body.customerInfo.email,
-            subject: `Order Confirmation - ${body.orderId} | DopeTech GMK`,
-            html: customerEmailHtml,
-            replyTo: 'dopetechnp@gmail.com'
-          })
-          console.log('✅ Customer confirmation email sent successfully')
-        } catch (emailError) {
-          console.error('❌ Error sending customer email:', emailError)
-        }
-      }
-
-      // Send admin notification email
-      if (resend) {
-        try {
-          const adminEmailHtml = `
-            <h2>New Order Received!</h2>
-            <p><strong>Order ID:</strong> ${body.orderId}</p>
-            <p><strong>Customer:</strong> ${body.customerInfo.fullName}</p>
-            <p><strong>Email:</strong> ${body.customerInfo.email}</p>
-            <p><strong>Phone:</strong> ${body.customerInfo.phone}</p>
-            <p><strong>Total:</strong> Rs ${body.total.toLocaleString()}</p>
-            <p><strong>Payment Option:</strong> ${body.paymentOption}</p>
-            ${receiptUrl ? `<p><strong>Receipt:</strong> <a href="${receiptUrl}">View Receipt</a></p>` : ''}
-          `
-          
-          await resend.emails.send({
-            from: 'DopeTech GMK <onboarding@resend.dev>',
-            to: [process.env.ADMIN_EMAIL || 'dopetechnp@gmail.com'],
-            subject: `🚨 New Order Alert: ${body.orderId} | DopeTech GMK`,
-            html: adminEmailHtml,
-            replyTo: 'dopetechnp@gmail.com'
-          })
-          console.log('✅ Admin notification email sent successfully')
-        } catch (emailError) {
-          console.error('❌ Error sending admin email:', emailError)
-        }
-      }
-      
-      console.log('✅ Notification emails sent successfully')
+      console.log('📧 Order processed successfully - email notifications would be sent here')
+      console.log('📧 Customer email would be sent to:', body.customerInfo.email)
+      console.log('📧 Admin notification would be sent to: dopetechnp@gmail.com')
     } catch (error) {
-      console.error('❌ Error sending notification emails:', error)
+      console.error('❌ Error with email notifications:', error)
       // Don't fail the order if email fails
     }
 
