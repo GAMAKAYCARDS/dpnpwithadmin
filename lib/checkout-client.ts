@@ -142,36 +142,10 @@ export const checkoutClient = {
 
       console.log('✅ Order items added successfully')
 
-      // Send order emails via API route
-      console.log('📧 Sending order emails...')
-      try {
-        const emailData = {
-          orderId: orderData.orderId,
-          orderDbId: order.id as number,
-          customerInfo: orderData.customerInfo,
-          cart: orderData.cart,
-          total: orderData.total,
-          paymentOption: orderData.paymentOption,
-          receiptUrl: receiptUrl || null
-        }
-
-        const emailResponse = await fetch('/api/send-order-emails', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(emailData)
-        })
-
-        if (emailResponse.ok) {
-          const emailResult = await emailResponse.json()
-          console.log('✅ Order emails sent successfully:', emailResult)
-        } else {
-          console.warn('⚠️ Failed to send order emails:', await emailResponse.text())
-        }
-      } catch (emailError) {
-        console.warn('⚠️ Error sending order emails:', emailError)
-      }
+      // Note: Email sending is disabled for static export
+      // In production, this would be handled by Netlify Functions
+      console.log('📧 Email sending disabled for static export')
+      console.log('📧 Order submitted successfully to database')
 
       return {
         success: true,

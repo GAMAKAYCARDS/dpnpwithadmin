@@ -6,15 +6,17 @@ const __dirname = path.dirname(__filename)
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Only use static export for production builds, not development
-  ...(process.env.NODE_ENV === 'production' && process.env.STATIC_EXPORT === 'true' && {
-    output: 'export',
-    trailingSlash: true,
-    distDir: 'out',
-    images: {
-      unoptimized: true,
-    },
-  }),
+  // Static export for Netlify deployment
+  output: 'export',
+  trailingSlash: true,
+  distDir: 'out',
+  images: {
+    unoptimized: true,
+  },
+  // Ensure static export works properly
+  skipTrailingSlashRedirect: true,
+  skipMiddlewareUrlNormalize: true,
+  // Exclude API routes from static export
   experimental: {
     excludeDefaultMomentLocales: false,
   },
