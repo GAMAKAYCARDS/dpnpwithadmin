@@ -143,11 +143,12 @@
   status = 302
   force = true
 
-[[redirects]]
-  from = "/payment/paymentQR.svg"
-  to = "/placeholder.jpg"
-  status = 302
-  force = true
+# Remove the problematic QR code redirect - let the actual QR code load
+# [[redirects]]
+#   from = "/payment/paymentQR.svg"
+#   to = "/placeholder.jpg"
+#   status = 302
+#   force = true
 
 # Handle all routes for Next.js
 [[redirects]]

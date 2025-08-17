@@ -36,11 +36,23 @@ export class EmailService {
   private gmailTransporter: nodemailer.Transporter | null
 
   private constructor() {
+    // Debug environment variables for Netlify
+    console.log('🔧 Email Service Initialization:')
+    console.log('📧 RESEND_API_KEY exists:', !!process.env.RESEND_API_KEY)
+    console.log('📧 GMAIL_USER exists:', !!process.env.GMAIL_USER)
+    console.log('📧 GMAIL_APP_PASSWORD exists:', !!process.env.GMAIL_APP_PASSWORD)
+    console.log('📧 ADMIN_EMAIL exists:', !!process.env.ADMIN_EMAIL)
+    console.log('🌐 NODE_ENV:', process.env.NODE_ENV)
+    console.log('🌐 VERCEL_ENV:', process.env.VERCEL_ENV)
+    console.log('🌐 NETLIFY_ENV:', process.env.NETLIFY_ENV)
+
     const apiKey = process.env.RESEND_API_KEY
     if (!apiKey) {
       console.warn('⚠️ RESEND_API_KEY not found - email service will be disabled')
+      console.warn('💡 Add RESEND_API_KEY to your Netlify environment variables')
       this.resend = null as any
     } else {
+      console.log('✅ Resend API key found, initializing Resend client...')
       this.resend = new Resend(apiKey)
     }
 
@@ -50,8 +62,10 @@ export class EmailService {
     
     if (!gmailUser || !gmailPass) {
       console.warn('⚠️ Gmail credentials not found - customer emails will use Resend')
+      console.warn('💡 Add GMAIL_USER and GMAIL_APP_PASSWORD to your Netlify environment variables')
       this.gmailTransporter = null
     } else {
+      console.log('✅ Gmail credentials found, initializing Gmail transporter...')
       this.gmailTransporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
