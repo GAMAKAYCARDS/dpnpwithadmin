@@ -53,7 +53,7 @@ ADMIN_EMAIL=your_admin_email@example.com
    - Check your Supabase Storage for the uploaded receipt
 
 4. **Test email notifications**:
-   - Visit `/test-email` to test email functionality
+   
    - Test email service configuration
    - Send test order emails
    - Check your email for test messages

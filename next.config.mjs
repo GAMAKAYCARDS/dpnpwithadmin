@@ -6,12 +6,7 @@ const __dirname = path.dirname(__filename)
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Only use static export for production builds
-  ...(process.env.NODE_ENV === 'production' && process.env.STATIC_EXPORT !== 'false' && {
-    output: 'export',
-    trailingSlash: true,
-  }),
-  // Exclude nested directories that contain API routes
+  // Remove static export - use standard Next.js for Netlify Functions
   experimental: {
     excludeDefaultMomentLocales: false,
   },
