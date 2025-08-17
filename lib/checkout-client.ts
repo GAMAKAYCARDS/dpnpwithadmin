@@ -45,8 +45,8 @@ export const checkoutClient = {
         throw new Error('Missing required fields')
       }
 
-      // Submit order to API route
-      const response = await fetch('/api/supabase-checkout', {
+      // Submit order to Netlify Function
+      const response = await fetch('/.netlify/functions/supabase-checkout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

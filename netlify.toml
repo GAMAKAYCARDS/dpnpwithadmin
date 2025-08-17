@@ -3,6 +3,10 @@
   publish = "out"
   functions = "netlify/functions"
 
+# Ensure functions are built properly
+[functions]
+  node_bundler = "esbuild"
+
 [build.environment]
   NODE_VERSION = "18.x"
   NPM_FLAGS = "--legacy-peer-deps"
