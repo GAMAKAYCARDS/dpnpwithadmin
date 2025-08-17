@@ -7,79 +7,78 @@ const supabaseServiceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXB
 const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
 async function checkDatabase() {
-  console.log('🔍 Checking database structure...')
+  console.log('🔍 Checking database tables and policies...')
   
   try {
-    // Check if orders table exists and has data
+    // Check if orders table exists
     console.log('\n📋 Checking orders table...')
-    const { data: orders, error: ordersError } = await supabase
+    const { data: ordersData, error: ordersError } = await supabase
       .from('orders')
       .select('*')
-      .limit(5)
+      .limit(1)
     
     if (ordersError) {
-      console.error('❌ Error accessing orders table:', ordersError)
+      console.error('❌ Orders table error:', ordersError)
     } else {
-      console.log(`✅ Orders table accessible. Found ${orders.length} orders`)
-      if (orders.length > 0) {
-        console.log('📊 Sample order:', {
-          id: orders[0].id,
-          order_id: orders[0].order_id,
-          customer_name: orders[0].customer_name
-        })
-      }
+      console.log('✅ Orders table accessible')
+      console.log(`📊 Orders count: ${ordersData?.length || 0}`)
     }
-
-    // Check if order_items table exists and has data
+    
+    // Check if order_items table exists
     console.log('\n📦 Checking order_items table...')
-    const { data: orderItems, error: itemsError } = await supabase
+    const { data: itemsData, error: itemsError } = await supabase
       .from('order_items')
       .select('*')
-      .limit(5)
+      .limit(1)
     
     if (itemsError) {
-      console.error('❌ Error accessing order_items table:', itemsError)
+      console.error('❌ Order items table error:', itemsError)
     } else {
-      console.log(`✅ Order items table accessible. Found ${orderItems.length} items`)
-      if (orderItems.length > 0) {
-        console.log('📊 Sample order item:', {
-          id: orderItems[0].id,
-          order_id: orderItems[0].order_id,
-          product_id: orderItems[0].product_id,
-          quantity: orderItems[0].quantity
-        })
-      }
+      console.log('✅ Order items table accessible')
+      console.log(`📊 Order items count: ${itemsData?.length || 0}`)
     }
-
+    
     // Check if products table exists
     console.log('\n🛍️ Checking products table...')
-    const { data: products, error: productsError } = await supabase
+    const { data: productsData, error: productsError } = await supabase
       .from('products')
       .select('*')
-      .limit(5)
+      .limit(1)
     
     if (productsError) {
-      console.error('❌ Error accessing products table:', productsError)
+      console.error('❌ Products table error:', productsError)
     } else {
-      console.log(`✅ Products table accessible. Found ${products.length} products`)
+      console.log('✅ Products table accessible')
+      console.log(`📊 Products count: ${productsData?.length || 0}`)
     }
-
-    // Check relationships
-    if (orders && orders.length > 0 && orderItems && orderItems.length > 0) {
-      console.log('\n🔗 Checking relationships...')
-      const sampleOrderId = orders[0].id
-      const { data: relatedItems, error: relError } = await supabase
-        .from('order_items')
-        .select('*')
-        .eq('order_id', sampleOrderId)
-      
-      if (relError) {
-        console.error('❌ Error checking relationships:', relError)
-      } else {
-        console.log(`✅ Found ${relatedItems.length} items for order ${sampleOrderId}`)
-      }
+    
+    // Test a full query with joins
+    console.log('\n🔗 Testing full query with joins...')
+    const { data: fullQueryData, error: fullQueryError } = await supabase
+      .from('orders')
+      .select(`
+        *,
+        order_items (
+          *,
+          products (
+            name,
+            image_url
+          )
+        )
+      `)
+      .limit(1)
+    
+    if (fullQueryError) {
+      console.error('❌ Full query error:', fullQueryError)
+    } else {
+      console.log('✅ Full query successful')
+      console.log('📊 Sample order with items:', fullQueryData?.[0] ? {
+        id: fullQueryData[0].id,
+        order_id: fullQueryData[0].order_id,
+        items_count: fullQueryData[0].order_items?.length || 0
+      } : 'No orders found')
     }
-
+    
   } catch (error) {
     console.error('❌ Database check failed:', error)
   }

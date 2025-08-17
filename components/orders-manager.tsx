@@ -38,6 +38,7 @@ export function OrdersManager() {
   const [statusFilter, setStatusFilter] = useState("all")
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
   const [orderDetailsOpen, setOrderDetailsOpen] = useState(false)
+  const [updatingStatus, setUpdatingStatus] = useState(false)
 
   // Load orders from data function
   const loadOrders = async () => {
@@ -53,11 +54,19 @@ export function OrdersManager() {
       console.log('📊 Sample order data:', ordersWithItems[0])
       console.log('📦 Sample order items:', ordersWithItems[0]?.order_items)
       
-      setOrders(ordersWithItems)
+      // Ensure all orders have valid payment_option values
+      const validatedOrders = ordersWithItems.map(order => ({
+        ...order,
+        payment_option: order.payment_option || 'full',
+        payment_status: order.payment_status || 'pending'
+      }))
+      
+      setOrders(validatedOrders)
     } catch (error) {
       console.error('❌ Error loading orders:', error)
       // Show error to user
       alert('Failed to load orders. Please check the console for details.')
+      setOrders([]) // Set empty array on error
     } finally {
       setLoading(false)
     }
@@ -65,7 +74,12 @@ export function OrdersManager() {
 
   useEffect(() => {
     console.log('🚀 OrdersManager component mounted, loading orders...')
-    loadOrders()
+    // Add a longer delay to ensure API is ready
+    const timer = setTimeout(() => {
+      loadOrders()
+    }, 1000)
+    
+    return () => clearTimeout(timer)
   }, [])
 
   // Filter orders based on search and status
@@ -109,6 +123,22 @@ export function OrdersManager() {
     }
   }
 
+  const formatPaymentStatus = (paymentStatus: string, paymentOption: string) => {
+    try {
+      if (!paymentStatus || !paymentOption) {
+        return paymentStatus || 'Unknown'
+      }
+      
+      if (paymentStatus === 'paid') {
+        return paymentOption === 'full' ? 'Paid in Full' : '10% Deposit Paid'
+      }
+      return paymentStatus
+    } catch (error) {
+      console.error('Error formatting payment status:', error)
+      return paymentStatus || 'Unknown'
+    }
+  }
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -131,6 +161,58 @@ export function OrdersManager() {
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
+  }
+
+  const handleStatusUpdate = async (orderId: number, newStatus: string) => {
+    try {
+      setUpdatingStatus(true)
+      console.log(`🔄 Updating order ${orderId} status to: ${newStatus}`)
+      
+      const response = await fetch('/api/orders', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          orderId,
+          order_status: newStatus
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+      }
+
+      const result = await response.json()
+      
+      if (result.success) {
+        console.log('✅ Order status updated successfully')
+        
+        // Update the order in the local state
+        setOrders(prevOrders => 
+          prevOrders.map(order => 
+            order.id === orderId 
+              ? { ...order, order_status: newStatus }
+              : order
+          )
+        )
+        
+        // Update the selected order if it's the same one
+        if (selectedOrder && selectedOrder.id === orderId) {
+          setSelectedOrder(prev => prev ? { ...prev, order_status: newStatus } : null)
+        }
+        
+        // Show success message
+        alert(`Order status updated to: ${newStatus}`)
+      } else {
+        throw new Error(result.error || 'Failed to update order status')
+      }
+    } catch (error) {
+      console.error('❌ Error updating order status:', error)
+      alert(`Failed to update order status: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    } finally {
+      setUpdatingStatus(false)
+    }
   }
 
   // Stats calculation
@@ -419,9 +501,9 @@ export function OrdersManager() {
                               <span className={`px-1.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(order.order_status)}`}>
                                 {order.order_status}
                               </span>
-                              <span className={`px-1.5 py-0.5 rounded-full text-xs font-medium ${getPaymentStatusColor(order.payment_status)}`}>
-                                {order.payment_status}
-                              </span>
+                                                             <span className={`px-1.5 py-0.5 rounded-full text-xs font-medium ${getPaymentStatusColor(order.payment_status)}`}>
+                                 {formatPaymentStatus(order.payment_status || '', order.payment_option || '')}
+                               </span>
                             </div>
                           </div>
                         </div>
@@ -448,20 +530,35 @@ export function OrdersManager() {
                             <span className="text-xs text-gray-500">•</span>
                             <span className="text-xs text-gray-500">{order.order_items?.length || 0} items</span>
                           </div>
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-xs font-semibold text-blue-400">Rs {order.total_amount}</span>
-                            <Button
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                handleViewOrder(order)
-                              }}
-                              variant="outline"
-                              size="sm"
-                              className="h-6 px-1.5 border-white/20 text-white hover:bg-white/10"
-                            >
-                              <Eye className="w-3 h-3" />
-                            </Button>
-                          </div>
+                                                     <div className="flex items-center gap-1.5">
+                             <span className="text-xs font-semibold text-blue-400">Rs {order.total_amount}</span>
+                             <select
+                               value={order.order_status}
+                               onChange={(e) => {
+                                 e.stopPropagation()
+                                 handleStatusUpdate(order.id, e.target.value)
+                               }}
+                               disabled={updatingStatus}
+                               className="px-1.5 py-0.5 bg-white/10 border border-white/20 rounded text-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs disabled:opacity-50"
+                               onClick={(e) => e.stopPropagation()}
+                             >
+                               <option value="processing" className="bg-slate-800">Processing</option>
+                               <option value="pending" className="bg-slate-800">Pending</option>
+                               <option value="completed" className="bg-slate-800">Completed</option>
+                               <option value="cancelled" className="bg-slate-800">Cancelled</option>
+                             </select>
+                             <Button
+                               onClick={(e) => {
+                                 e.stopPropagation()
+                                 handleViewOrder(order)
+                               }}
+                               variant="outline"
+                               size="sm"
+                               className="h-6 px-1.5 border-white/20 text-white hover:bg-white/10"
+                             >
+                               <Eye className="w-3 h-3" />
+                             </Button>
+                           </div>
                         </div>
                       </div>
                     </div>
@@ -511,9 +608,9 @@ export function OrdersManager() {
                               <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(order.order_status)}`}>
                                 {order.order_status}
                               </span>
-                              <span className={`px-3 py-1 rounded-full text-sm font-medium ${getPaymentStatusColor(order.payment_status)}`}>
-                                {order.payment_status}
-                              </span>
+                                                             <span className={`px-3 py-1 rounded-full text-sm font-medium ${getPaymentStatusColor(order.payment_status)}`}>
+                                 {formatPaymentStatus(order.payment_status || '', order.payment_option || '')}
+                               </span>
                             </div>
 
                             {/* Items Count */}
@@ -528,19 +625,36 @@ export function OrdersManager() {
                               <div className="text-lg font-bold text-blue-400">Rs {order.total_amount}</div>
                             </div>
 
-                            {/* View Button */}
-                            <Button
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                handleViewOrder(order)
-                              }}
-                              variant="outline"
-                              size="sm"
-                              className="h-10 px-4 border-white/20 text-white hover:bg-white/10 group-hover:border-white/40"
-                            >
-                              <Eye className="w-4 h-4 mr-2" />
-                              <span>View</span>
-                            </Button>
+                                                         {/* Status Update Dropdown */}
+                             <select
+                               value={order.order_status}
+                               onChange={(e) => {
+                                 e.stopPropagation()
+                                 handleStatusUpdate(order.id, e.target.value)
+                               }}
+                               disabled={updatingStatus}
+                               className="px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm disabled:opacity-50"
+                               onClick={(e) => e.stopPropagation()}
+                             >
+                               <option value="processing" className="bg-slate-800">Processing</option>
+                               <option value="pending" className="bg-slate-800">Pending</option>
+                               <option value="completed" className="bg-slate-800">Completed</option>
+                               <option value="cancelled" className="bg-slate-800">Cancelled</option>
+                             </select>
+                             
+                             {/* View Button */}
+                             <Button
+                               onClick={(e) => {
+                                 e.stopPropagation()
+                                 handleViewOrder(order)
+                               }}
+                               variant="outline"
+                               size="sm"
+                               className="h-10 px-4 border-white/20 text-white hover:bg-white/10 group-hover:border-white/40"
+                             >
+                               <Eye className="w-4 h-4 mr-2" />
+                               <span>View</span>
+                             </Button>
                           </div>
                         </div>
                       </div>
@@ -604,25 +718,41 @@ export function OrdersManager() {
                   </CardContent>
                 </Card>
 
-                <Card className="bg-white/5 border border-white/20">
-                  <CardHeader className="pb-3 sm:pb-4 p-3 sm:p-4">
-                    <CardTitle className="text-sm sm:text-base font-semibold text-white">Status</CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-3 sm:p-4 space-y-2 sm:space-y-3">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
-                      <span className="text-xs sm:text-sm text-gray-400">Order Status:</span>
-                      <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-medium border whitespace-nowrap ${getStatusColor(selectedOrder.order_status)}`}>
-                        {selectedOrder.order_status}
-                      </span>
-                    </div>
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
-                      <span className="text-xs sm:text-sm text-gray-400">Payment Status:</span>
-                      <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-medium border whitespace-nowrap ${getPaymentStatusColor(selectedOrder.payment_status)}`}>
-                        {selectedOrder.payment_status}
-                      </span>
-                    </div>
-                  </CardContent>
-                </Card>
+                                 <Card className="bg-white/5 border border-white/20">
+                   <CardHeader className="pb-3 sm:pb-4 p-3 sm:p-4">
+                     <CardTitle className="text-sm sm:text-base font-semibold text-white">Status</CardTitle>
+                   </CardHeader>
+                   <CardContent className="p-3 sm:p-4 space-y-2 sm:space-y-3">
+                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+                       <span className="text-xs sm:text-sm text-gray-400">Order Status:</span>
+                       <div className="flex items-center gap-2">
+                         <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-medium border whitespace-nowrap ${getStatusColor(selectedOrder.order_status)}`}>
+                           {selectedOrder.order_status}
+                         </span>
+                         <select
+                           value={selectedOrder.order_status}
+                           onChange={(e) => handleStatusUpdate(selectedOrder.id, e.target.value)}
+                           disabled={updatingStatus}
+                           className="px-2 py-1 bg-white/10 border border-white/20 rounded text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-xs sm:text-sm disabled:opacity-50"
+                         >
+                           <option value="processing" className="bg-slate-800">Processing</option>
+                           <option value="pending" className="bg-slate-800">Pending</option>
+                           <option value="completed" className="bg-slate-800">Completed</option>
+                           <option value="cancelled" className="bg-slate-800">Cancelled</option>
+                         </select>
+                         {updatingStatus && (
+                           <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin text-blue-400" />
+                         )}
+                       </div>
+                     </div>
+                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+                       <span className="text-xs sm:text-sm text-gray-400">Payment Status:</span>
+                                               <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-medium border whitespace-nowrap ${getPaymentStatusColor(selectedOrder.payment_status)}`}>
+                          {formatPaymentStatus(selectedOrder.payment_status || '', selectedOrder.payment_option || '')}
+                        </span>
+                     </div>
+                   </CardContent>
+                 </Card>
               </div>
 
               {/* Customer Information */}

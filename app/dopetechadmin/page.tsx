@@ -49,6 +49,7 @@ import { useAssets } from '@/hooks/use-assets'
 import { AssetUploader } from '@/components/asset-uploader'
 import { HeroImageManager } from '@/components/hero-image-manager'
 import { OrdersManager } from '@/components/orders-manager'
+import { ErrorBoundary } from '@/components/error-boundary'
 
 interface AdminProduct extends Product {
   isNew?: boolean
@@ -1148,7 +1149,9 @@ export default function DopeTechAdmin() {
 
         {/* Orders & Receipts Tab */}
         {activeTab === "orders" && (
-          <OrdersManager />
+          <ErrorBoundary>
+            <OrdersManager />
+          </ErrorBoundary>
         )}
       </main>
     </div>

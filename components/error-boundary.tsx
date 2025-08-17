@@ -1,72 +1,46 @@
-'use client'
+"use client"
 
-import React from 'react'
+import React, { Component, ErrorInfo, ReactNode } from 'react'
 
-interface ErrorBoundaryState {
+interface Props {
+  children: ReactNode
+  fallback?: ReactNode
+}
+
+interface State {
   hasError: boolean
   error?: Error
 }
 
-interface ErrorBoundaryProps {
-  children: React.ReactNode
-  fallback?: React.ComponentType<{ error?: Error; resetError: () => void }>
-}
-
-export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  constructor(props: ErrorBoundaryProps) {
-    super(props)
-    this.state = { hasError: false }
+export class ErrorBoundary extends Component<Props, State> {
+  public state: State = {
+    hasError: false
   }
 
-  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+  public static getDerivedStateFromError(error: Error): State {
+    // Update state so the next render will show the fallback UI.
     return { hasError: true, error }
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('ErrorBoundary caught an error:', error, errorInfo)
-    
-    // Prevent multiple error logs
-    if (typeof window !== 'undefined') {
-      window.addEventListener('error', (e) => {
-        e.preventDefault()
-        console.warn('Prevented error from bubbling:', e.error)
-      })
-      
-      window.addEventListener('unhandledrejection', (e) => {
-        e.preventDefault()
-        console.warn('Prevented unhandled promise rejection:', e.reason)
-      })
-    }
   }
 
-  resetError = () => {
-    this.setState({ hasError: false, error: undefined })
-  }
-
-  render() {
+  public render() {
     if (this.state.hasError) {
-      if (this.props.fallback) {
-        const FallbackComponent = this.props.fallback
-        return <FallbackComponent error={this.state.error} resetError={this.resetError} />
-      }
-      
-      return (
-        <div className="min-h-screen flex items-center justify-center bg-black text-white p-4">
-          <div className="max-w-md w-full text-center space-y-6">
-            <div className="space-y-2">
-              <h1 className="text-2xl font-bold text-[#F7DD0F]">Something went wrong!</h1>
-              <p className="text-gray-400">
-                We're sorry, but something unexpected happened. Please try refreshing the page.
-              </p>
-            </div>
-            
-            <button
-              onClick={this.resetError}
-              className="w-full bg-[#F7DD0F] text-black px-6 py-3 rounded-lg font-semibold hover:bg-[#F7DD0F]/90 transition-colors"
-            >
-              Try again
-            </button>
-          </div>
+      // You can render any custom fallback UI
+      return this.props.fallback || (
+        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+          <h2 className="text-lg font-semibold text-red-800 mb-2">Something went wrong</h2>
+          <p className="text-red-600 mb-4">
+            {this.state.error?.message || 'An unexpected error occurred'}
+          </p>
+          <button
+            onClick={() => this.setState({ hasError: false, error: undefined })}
+            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+          >
+            Try again
+          </button>
         </div>
       )
     }
