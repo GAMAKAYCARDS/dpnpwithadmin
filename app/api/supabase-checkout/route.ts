@@ -186,56 +186,46 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Function to send notification email (placeholder - implement with your email service)
+// Import email service
+import { emailService } from '@/lib/email-service'
+
+// Function to send notification emails using Resend
 async function sendNotificationEmail(orderData: CheckoutData, orderDbId: number, receiptUrl: string | null) {
-  // This is a placeholder. You can integrate with:
-  // - Resend (recommended for Next.js)
-  // - SendGrid
-  // - Nodemailer
-  // - Supabase Edge Functions for email
-  
-  console.log('📧 Sending notification email for order:', orderDbId)
-  console.log('📧 Order details:', {
-    orderId: orderData.orderId,
-    customerName: orderData.customerInfo.fullName,
-    customerEmail: orderData.customerInfo.email,
-    total: orderData.total,
-    paymentOption: orderData.paymentOption,
-    hasReceipt: !!receiptUrl
-  })
-  
-  // Example email content:
-  const emailContent = `
-    New Order Received!
+  try {
+    console.log('📧 Sending notification emails for order:', orderDbId)
     
-    Order ID: ${orderData.orderId}
-    Customer: ${orderData.customerInfo.fullName}
-    Email: ${orderData.customerInfo.email}
-    Phone: ${orderData.customerInfo.phone}
-    Address: ${orderData.customerInfo.fullAddress}
-    Total: Rs ${orderData.total}
-    Payment Option: ${orderData.paymentOption}
-    Receipt: ${receiptUrl ? 'Uploaded' : 'Not provided'}
-    
-    Items:
-    ${orderData.cart.map(item => `- ${item.quantity}x ${item.name} (Rs ${item.price})`).join('\n')}
-  `
-  
-  console.log('📧 Email content:', emailContent)
-  
-  // TODO: Implement actual email sending
-  // Example with Resend:
-  // await fetch('https://api.resend.com/emails', {
-  //   method: 'POST',
-  //   headers: {
-  //     'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
-  //     'Content-Type': 'application/json',
-  //   },
-  //   body: JSON.stringify({
-  //     from: 'orders@dopetech-nepal.com',
-  //     to: 'your-email@example.com',
-  //     subject: `New Order: ${orderData.orderId}`,
-  //     html: emailContent
-  //   })
-  // })
+    // Send both customer confirmation and admin notification emails
+    const emailResults = await emailService.sendOrderEmails(
+      {
+        orderId: orderData.orderId,
+        customerInfo: orderData.customerInfo,
+        cart: orderData.cart,
+        total: orderData.total,
+        paymentOption: orderData.paymentOption,
+        receiptUrl
+      },
+      orderDbId
+    )
+
+    // Log results
+    if (emailResults.customerEmail.success) {
+      console.log('✅ Customer confirmation email sent successfully')
+    } else {
+      console.warn('⚠️ Customer confirmation email failed:', emailResults.customerEmail.error)
+    }
+
+    if (emailResults.adminEmail.success) {
+      console.log('✅ Admin notification email sent successfully')
+    } else {
+      console.warn('⚠️ Admin notification email failed:', emailResults.adminEmail.error)
+    }
+
+    return emailResults
+  } catch (error) {
+    console.error('❌ Error sending notification emails:', error)
+    return {
+      customerEmail: { success: false, message: 'Email service error', error: error instanceof Error ? error.message : 'Unknown error' },
+      adminEmail: { success: false, message: 'Email service error', error: error instanceof Error ? error.message : 'Unknown error' }
+    }
+  }
 }

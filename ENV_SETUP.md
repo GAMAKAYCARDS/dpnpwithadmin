@@ -10,8 +10,9 @@ NEXT_PUBLIC_SUPABASE_URL=https://aizgswoelfdkhyosgvzu.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFpemdzd29lbGZka2h5b3Nndnp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwNTUyMjUsImV4cCI6MjA3MDYzMTIyNX0.4a7Smvc_bueFLqZNvGk-AW0kD5dJusNwqaSAczJs0hU
 SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFpemdzd29lbGZka2h5b3Nndnp1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NTA1NTIyNSwiZXhwIjoyMDcwNjMxMjI1fQ.gLnsyAhR8VSjbe37LdEHuFBGNDufqC4jZ9X3UOSNuGc
 
-# Optional: Email Service (for order notifications)
-# RESEND_API_KEY=your-resend-api-key-here
+# Email Service (Resend)
+RESEND_API_KEY=your_resend_api_key_here
+ADMIN_EMAIL=your_admin_email@example.com
 ```
 
 ## How to get the values:
@@ -21,9 +22,14 @@ SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhY
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Already set to your public anon key
 - `SUPABASE_SERVICE_ROLE_KEY`: Already set to your service role key
 
-### 2. Optional: Email Service
+### 2. Email Service (Resend)
 - `RESEND_API_KEY`: For sending order notification emails
-- You can get this from [Resend](https://resend.com) or use any other email service
+  - Sign up at [Resend](https://resend.com)
+  - Create a new API key
+  - Add your domain (e.g., dopetech-nepal.com)
+- `ADMIN_EMAIL`: Email address to receive admin notifications
+  - This is where you'll receive order alerts
+  - Can be your personal email or business email
 
 ## After creating .env.local:
 
@@ -45,6 +51,12 @@ SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhY
    - Upload a receipt image
    - Submit the order
    - Check your Supabase Storage for the uploaded receipt
+
+4. **Test email notifications**:
+   - Visit `/test-email` to test email functionality
+   - Test email service configuration
+   - Send test order emails
+   - Check your email for test messages
 
 ## For Netlify Deployment:
 
