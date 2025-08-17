@@ -1,6 +1,6 @@
 [build]
   command = "npm run build"
-  publish = ".next"
+  publish = "out"
 
 [build.environment]
   NODE_VERSION = "18.x"
@@ -145,4 +145,10 @@
   to = "/placeholder.jpg"
   status = 302
   force = true
+
+# Handle all routes for Next.js
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
 
