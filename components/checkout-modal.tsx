@@ -714,17 +714,29 @@ export default function CheckoutModal({ isOpen, onClose, cart, total }: Checkout
                       src="/payment/paymentQR.svg" 
                       alt="Payment QR" 
                       className="w-full h-auto max-w-[200px] md:max-w-[280px] max-h-[400px] md:max-h-[500px]"
+                      onLoad={(e) => {
+                        console.log('✅ Payment QR code loaded successfully');
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'block';
+                        const fallback = target.parentElement?.querySelector('.qr-fallback');
+                        if (fallback) {
+                          fallback.classList.add('hidden');
+                        }
+                      }}
                       onError={(e) => {
-                        console.error('Failed to load QR code:', e);
+                        console.error('❌ Payment QR code failed to load');
                         const target = e.target as HTMLImageElement;
                         target.style.display = 'none';
                         // Show fallback text
-                        const fallback = target.nextElementSibling;
-                        if (fallback) fallback.classList.remove('hidden');
+                        const fallback = target.parentElement?.querySelector('.qr-fallback');
+                        if (fallback) {
+                          fallback.classList.remove('hidden');
+                        }
                       }}
                     />
-                    <div className="hidden w-full h-full bg-gray-200 rounded flex items-center justify-center">
-                      <span className="text-gray-500 text-sm">QR Code loading failed. Please refresh the page.</span>
+                    <div className="qr-fallback hidden w-full h-full bg-gray-200 rounded flex flex-col items-center justify-center">
+                      <span className="text-gray-500 text-sm mb-2">Payment QR Code</span>
+                      <span className="text-gray-400 text-xs">Contact: dopetechnp@gmail.com</span>
                     </div>
                   </div>
                   <div>

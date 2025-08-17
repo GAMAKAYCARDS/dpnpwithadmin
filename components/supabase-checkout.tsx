@@ -521,7 +521,17 @@ export default function SupabaseCheckout({ isOpen, onClose, cart, total, onCartR
                         src="/payment/paymentQR.svg" 
                         alt="Payment QR Code"
                         className="w-full h-full object-contain"
+                        onLoad={(e) => {
+                          console.log('✅ Payment QR code loaded successfully');
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'block';
+                          const fallback = target.parentElement?.querySelector('.qr-fallback');
+                          if (fallback) {
+                            fallback.classList.add('hidden');
+                          }
+                        }}
                         onError={(e) => {
+                          console.error('❌ Payment QR code failed to load');
                           // Fallback if QR code image fails to load
                           const target = e.target as HTMLImageElement;
                           target.style.display = 'none';
@@ -536,6 +546,7 @@ export default function SupabaseCheckout({ isOpen, onClose, cart, total, onCartR
                         <QrCode className="w-16 h-16 text-gray-400 mb-2" />
                         <span className="text-gray-500 text-sm font-medium">Payment QR Code</span>
                         <span className="text-gray-400 text-xs mt-1">Amount: Rs {paymentAmount.toLocaleString()}</span>
+                        <span className="text-gray-400 text-xs mt-1">Contact: dopetechnp@gmail.com</span>
                       </div>
                     </div>
                     <p className="text-gray-300 text-sm mb-2">Scan this QR code with your payment app</p>

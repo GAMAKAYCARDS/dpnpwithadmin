@@ -689,29 +689,36 @@ export class EmailService {
       if (this.gmailTransporter) {
         console.log('📧 Sending customer email via Gmail SMTP...')
         console.log('📧 Customer email address:', orderData.customerInfo.email)
+        console.log('📧 Gmail user:', process.env.GMAIL_USER)
         
         const emailHtml = this.generateCustomerEmailHTML(orderData)
         
         const mailOptions = {
-          from: process.env.GMAIL_USER,
+          from: `"DopeTech GMK" <${process.env.GMAIL_USER}>`,
           to: orderData.customerInfo.email,
           subject: `Order Confirmation - ${orderData.orderId} | DopeTech GMK`,
           html: emailHtml,
           replyTo: 'dopetechnp@gmail.com'
         }
 
-        const info = await this.gmailTransporter.sendMail(mailOptions)
-        console.log('✅ Customer confirmation email sent successfully via Gmail:', info.messageId)
-        console.log('📧 Customer email sent to:', orderData.customerInfo.email)
-        return {
-          success: true,
-          message: 'Customer confirmation email sent successfully via Gmail'
+        try {
+          const info = await this.gmailTransporter.sendMail(mailOptions)
+          console.log('✅ Customer confirmation email sent successfully via Gmail:', info.messageId)
+          console.log('📧 Customer email sent to:', orderData.customerInfo.email)
+          return {
+            success: true,
+            message: 'Customer confirmation email sent successfully via Gmail'
+          }
+        } catch (gmailError) {
+          console.error('❌ Gmail SMTP error:', gmailError)
+          console.log('📧 Falling back to Resend for customer email...')
+          // Continue to Resend fallback
         }
       }
 
-      // Fallback to Resend (only for verified emails)
+      // Fallback to Resend (for any email address)
       if (this.resend) {
-        console.log('📧 Sending customer email via Resend (fallback)...')
+        console.log('📧 Sending customer email via Resend...')
         console.log('📧 Customer email address:', orderData.customerInfo.email)
         
         const emailHtml = this.generateCustomerEmailHTML(orderData)
