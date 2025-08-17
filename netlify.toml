@@ -1,6 +1,6 @@
 [build]
   command = "npm run build"
-  publish = "out"
+  publish = ".next"
 
 [build.environment]
   NODE_VERSION = "18.x"
@@ -124,13 +124,6 @@
 [[redirects]]
   from = "/_next/static/*"
   to = "/_next/static/:splat"
-  status = 200
-  force = true
-
-# API routes redirects for static export
-[[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/:splat"
   status = 200
   force = true
 

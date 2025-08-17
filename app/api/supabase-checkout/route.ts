@@ -2,10 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
 import { emailService } from '@/lib/email-service'
 
-// Required for static export compatibility
-export const dynamic = 'force-static'
-export const revalidate = 0
-
 interface CheckoutData {
   orderId: string
   customerInfo: {
